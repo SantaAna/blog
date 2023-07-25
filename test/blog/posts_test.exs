@@ -8,7 +8,39 @@ defmodule Blog.PostsTest do
 
     import Blog.PostsFixtures
 
-    @invalid_attrs %{body: nil, title: nil}
+    @invalid_attrs %{body: nil, title: nil, subtitle: %{hello: "map"}}
+
+    test "search_by_title/1 returns empty list with no matches" do
+      assert Posts.search_by_title("hello") == []
+    end
+
+    test "search_by_title/1 returns list with one element with one match" do
+      match = post_fixture(%{title: "hello"})
+      post_fixture(%{title: "world"})
+      assert Posts.search_by_title("hello") == [match]
+    end
+
+    test "search_by_title/1 return multiple matches" do
+      match1 = post_fixture(%{title: "hello"})
+      match2 = post_fixture(%{title: "hello world"})
+      post_fixture(%{title: "world"})
+      
+      expected = [match1, match2]
+      result = Posts.search_by_title("hello")
+
+      assert Enum.sort(result) == Enum.sort(expected)
+               
+    end
+
+    test "search_by_title/1 is case insensitive" do
+      match1 = post_fixture(%{title: "HELLO"})
+      match2 = post_fixture(%{title: "HeLlO"})
+      
+      expected =[match1, match2]
+      result = Posts.search_by_title("hello")
+
+      assert Enum.sort(result) == Enum.sort(expected)
+    end
 
     test "list_posts/0 returns all posts" do
       post = post_fixture()
