@@ -14,6 +14,30 @@ defmodule BlogWeb.PostControllerTest do
     end
   end
 
+  describe "post/search" do
+    test "renders page", %{conn: conn} do
+      conn = get(conn, ~p"/posts/search")
+      assert html_response(conn, 200) =~ "Hello, this is post"
+    end
+    
+    test "renders query on page", %{conn: conn} do
+      conn = get(conn, ~p"/posts/search", title: "wow")
+      assert html_response(conn, 200) =~ "wow"
+    end
+
+    test "renders match on page", %{conn: conn} do
+      post_fixture(%{title: "hello world"})
+      conn = get(conn, ~p"/posts/search", title: "hello")
+      assert html_response(conn, 200) =~ "hello world"
+    end
+
+    test "does not render non-match on page", %{conn: conn} do
+      post_fixture(%{title: "hello world"})
+      conn = get(conn, ~p"/posts/search", title: "blue")
+      refute html_response(conn, 200) =~ "hello world"
+    end
+  end
+
   describe "new post" do
     test "renders form", %{conn: conn} do
       conn = get(conn, ~p"/posts/new")
