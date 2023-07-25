@@ -1,0 +1,22 @@
+<h1>Hello, this is post search</h1>
+<.simple_form :let={f} for={%{}} method={"get"} action={~p"/posts/search"}>
+  <.input field={f[:title]} type="text" label="Search Posts" value={@title_query}/>
+  <:actions>
+    <.button>Search</.button>
+  </:actions>
+</.simple_form>
+<.table id="posts" rows={@matches}>
+  <:col :let={match} label="Title"><%= match.title %></:col>
+  <:col :let={match} label="Body"><%= match.body %></:col>
+  <:action :let={match}>
+      <.link navigate={~p"/posts/#{match}"}>Show</.link>
+  </:action>
+  <:action :let={match}>
+    <.link navigate={~p"/posts/#{match}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={match}>
+    <.link href={~p"/posts/#{match}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

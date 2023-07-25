@@ -8,6 +8,13 @@ defmodule Blog.Posts do
 
   alias Blog.Posts.Post
 
+  def search_by_title(title) do
+    search_string = "%#{title}%"
+    match_query = from p in Post,
+              where: ilike(p.title, ^search_string)
+    Repo.all(match_query)
+  end
+
   @doc """
   Returns the list of posts.
 
