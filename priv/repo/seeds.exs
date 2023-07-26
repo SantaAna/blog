@@ -14,26 +14,47 @@ alias Blog.Repo
 alias Blog.Posts.Post
 Faker.start()
 
-Enum.each(1..3, fn _ ->
+rus_post_list =
+  for x <- 1..10 do
+    title ="#{Faker.Lorem.Shakespeare.Ru.hamlet()} #{x}"
+    date = cond do
+      rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
+      rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
+      rem(x,3) == 2 -> Date.utc_today()
+    end
+
+    body = Faker.Lorem.Shakespeare.Ru.romeo_and_juliet()
+
+    visible = rem(x, 2) == 0
+
+    %{title: title, body: body, visible: visible, published_on: date}
+  end
+
+en_post_list =
+  for x <- 1..10 do
+    title ="#{Faker.Lorem.Shakespeare.En.hamlet()} #{x}"
+    date = cond do
+      rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
+      rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
+      rem(x,3) == 2 -> Date.utc_today()
+    end
+    body = Faker.Lorem.paragraphs(3) |> Enum.join("\n")
+    visible = rem(x, 2) == 0
+    %{title: title, body: body, visible: visible, published_on: date}
+  end
+
+Enum.each(rus_post_list, fn post_data ->
   Post.changeset(
     %Post{},
-    %{
-      title: Faker.Lorem.Shakespeare.Ru.hamlet(),
-      sub_title: Faker.Lorem.Shakespeare.Ru.king_richard_iii(),
-      body: Faker.Lorem.Shakespeare.Ru.romeo_and_juliet()
-    }
+    post_data
   )
   |> Repo.insert!()
 end)
 
-Enum.each(1..7, fn _ ->
+Enum.each(en_post_list, fn post_data ->
   Post.changeset(
     %Post{},
-    %{
-      title: Faker.Lorem.sentence(),
-      sub_title: Faker.Cat.name(),
-      body: Faker.Lorem.paragraphs(3) |> Enum.join("\n")
-    }
+    post_data
   )
   |> Repo.insert!()
 end)

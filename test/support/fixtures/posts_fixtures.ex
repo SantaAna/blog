@@ -13,7 +13,8 @@ defmodule Blog.PostsFixtures do
       |> Enum.into(%{
         body: "some body",
         title: "some title",
-        sub_title: "some subtitle" 
+        published_on: Date.utc_today(),
+        visible: true
       })
       |> Blog.Posts.create_post()
 

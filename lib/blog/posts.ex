@@ -10,8 +10,11 @@ defmodule Blog.Posts do
 
   def search_by_title(title) do
     search_string = "%#{title}%"
-    match_query = from p in Post,
-              where: ilike(p.title, ^search_string)
+
+    match_query =
+      from p in Post,
+        where: ilike(p.title, ^search_string)
+
     Repo.all(match_query)
   end
 
@@ -25,8 +28,14 @@ defmodule Blog.Posts do
 
   """
   def list_posts do
-    Repo.all(Post)
+    list_query =
+      from p in Post,
+      where: p.visible,
+      where: p.published_on <= ^Date.utc_today(),
+      order_by: [desc: p.published_on]
+    Repo.all(list_query)
   end
+
 
   @doc """
   Gets a single post.

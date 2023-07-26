@@ -19,7 +19,7 @@ defmodule BlogWeb.PostControllerTest do
       conn = get(conn, ~p"/posts/search")
       assert html_response(conn, 200) =~ "Hello, this is post"
     end
-    
+
     test "renders query on page", %{conn: conn} do
       conn = get(conn, ~p"/posts/search", title: "wow")
       assert html_response(conn, 200) =~ "wow"

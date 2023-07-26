@@ -11,6 +11,8 @@
 <.list>
   <:item title="Title"><%= @post.title %></:item>
   <:item title="Body"><%= @post.body %></:item>
+  <:item title="Published On"><%= @post.published_on %></:item>
+  <:item title="Visible"><%= @post.visible %></:item>
 </.list>
 
 <.back navigate={~p"/posts"}>Back to posts</.back>
