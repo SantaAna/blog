@@ -1,6 +1,6 @@
 <h1>Hello, this is post search</h1>
-<.simple_form :let={f} for={%{}} method={"get"} action={~p"/posts/search"}>
-  <.input field={f[:title]} type="text" label="Search Posts" value={@title_query}/>
+<.simple_form :let={f} for={%{}} method="get" action={~p"/posts/search"}>
+  <.input field={f[:title]} type="text" label="Search Posts" value={@title_query} />
   <:actions>
     <.button>Search</.button>
   </:actions>
@@ -8,8 +8,10 @@
 <.table id="posts" rows={@matches}>
   <:col :let={match} label="Title"><%= match.title %></:col>
   <:col :let={match} label="Body"><%= match.body %></:col>
+  <:col :let={match} label="Published On"><%= match.published_on %></:col>
+  <:col :let={match} label="Visible"><%= match.visible %></:col>
   <:action :let={match}>
-      <.link navigate={~p"/posts/#{match}"}>Show</.link>
+    <.link navigate={~p"/posts/#{match}"}>Show</.link>
   </:action>
   <:action :let={match}>
     <.link navigate={~p"/posts/#{match}/edit"}>Edit</.link>

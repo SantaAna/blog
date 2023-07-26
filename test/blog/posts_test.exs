@@ -24,26 +24,25 @@ defmodule Blog.PostsTest do
       match1 = post_fixture(%{title: "hello"})
       match2 = post_fixture(%{title: "hello world"})
       post_fixture(%{title: "world"})
-      
+
       expected = [match1, match2]
       result = Posts.search_by_title("hello")
 
       assert Enum.sort(result) == Enum.sort(expected)
-               
     end
 
     test "search_by_title/1 is case insensitive" do
       match1 = post_fixture(%{title: "HELLO"})
       match2 = post_fixture(%{title: "HeLlO"})
-      
-      expected =[match1, match2]
+
+      expected = [match1, match2]
       result = Posts.search_by_title("hello")
 
       assert Enum.sort(result) == Enum.sort(expected)
     end
 
     test "list_posts/0 returns all posts" do
-      post = post_fixture()
+      post = post_fixture(
       assert Posts.list_posts() == [post]
     end
 

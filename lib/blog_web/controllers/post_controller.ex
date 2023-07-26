@@ -6,11 +6,11 @@ defmodule BlogWeb.PostController do
 
   def search(conn, %{"title" => title_query}) do
     matches = Posts.search_by_title(title_query)
-    render(conn, :search, title_query: title_query, matches: matches)    
+    render(conn, :search, title_query: title_query, matches: matches)
   end
 
   def search(conn, _params) do
-    render(conn, :search, title_query: nil, matches: [])    
+    render(conn, :search, title_query: nil, matches: [])
   end
 
   def index(conn, _params) do

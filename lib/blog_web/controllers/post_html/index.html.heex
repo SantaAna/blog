@@ -10,6 +10,8 @@
 <.table id="posts" rows={@posts} row_click={&JS.navigate(~p"/posts/#{&1}")}>
   <:col :let={post} label="Title"><%= post.title %></:col>
   <:col :let={post} label="Body"><%= post.body %></:col>
+  <:col :let={post} label="Visible"><%= post.visible %></:col>
+  <:col :let={post} label="Published On"><%= post.published_on %></:col>
   <:action :let={post}>
     <div class="sr-only">
       <.link navigate={~p"/posts/#{post}"}>Show</.link>
