@@ -19,6 +19,8 @@ defmodule BlogWeb.Router do
     get "/posts/search", PostController, :search
     resources "/posts", PostController
     get "/", PageController, :home
+    post "/comments", PostController, :add_comment
+    delete "/comments/:id", PostController, :delete_comment
   end
 
   # Other scopes may use custom stacks.

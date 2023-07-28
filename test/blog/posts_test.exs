@@ -7,17 +7,21 @@ defmodule Blog.PostsTest do
     alias Blog.Posts.Post
 
     import Blog.PostsFixtures
+    import Blog.CommentsFixtures
 
     @invalid_attrs %{body: nil, title: nil, subtitle: %{hello: "map"}}
 
     test "search_by_title/1 does not return visible: false posts" do
-        post_fixture(%{visible: false})
-        assert Posts.search_by_title("some title") == []
+      post_fixture(%{visible: false})
+      assert Posts.search_by_title("some title") == []
     end
 
     test "search_by_title/1 displays posts in order from newest to oldest" do
       today_post = post_fixture(%{published_on: Date.utc_today(), visible: true})
-      yesterday_post = post_fixture(%{published_on: Date.add(Date.utc_today(), -1), visible: true})
+
+      yesterday_post =
+        post_fixture(%{published_on: Date.add(Date.utc_today(), -1), visible: true})
+
       assert Posts.search_by_title("") == [today_post, yesterday_post]
     end
 
@@ -38,7 +42,10 @@ defmodule Blog.PostsTest do
 
     test "search_by_title/1 return multiple matches" do
       match1 = post_fixture(%{title: "hello", published_on: Date.utc_today(), visible: true})
-      match2 = post_fixture(%{title: "hello world", published_on: Date.utc_today(), visible: true})
+
+      match2 =
+        post_fixture(%{title: "hello world", published_on: Date.utc_today(), visible: true})
+
       post_fixture(%{title: "world", published_on: Date.utc_today(), visible: true})
 
       expected = [match1, match2]
@@ -64,7 +71,10 @@ defmodule Blog.PostsTest do
 
     test "list_posts/0 displays posts in order from newest to oldest" do
       today_post = post_fixture(%{published_on: Date.utc_today(), visible: true})
-      yesterday_post = post_fixture(%{published_on: Date.add(Date.utc_today(), -1), visible: true})
+
+      yesterday_post =
+        post_fixture(%{published_on: Date.add(Date.utc_today(), -1), visible: true})
+
       assert Posts.list_posts() == [today_post, yesterday_post]
     end
 
@@ -78,9 +88,15 @@ defmodule Blog.PostsTest do
       assert Posts.list_posts() == [post]
     end
 
-    test "get_post!/1 returns the post with given id" do
+    test "get_post!/2 returns the post with given id and no options" do
       post = post_fixture()
       assert Posts.get_post!(post.id) == post
+    end
+
+    test "get_post!/2 returns the post with given id and comments" do
+      post = post_fixture()
+      comment = comment_fixture(%{post_id: post.id})
+      assert Posts.get_post!(post.id, load_comments: true).comments == [comment]
     end
 
     test "create_post/1 with valid data creates a post" do

@@ -3,6 +3,8 @@ defmodule BlogWeb.PostController do
 
   alias Blog.Posts
   alias Blog.Posts.Post
+  alias Blog.Comments
+  alias Blog.Comments.Comment
 
   def search(conn, %{"title" => title_query}) do
     matches = Posts.search_by_title(title_query)
@@ -23,6 +25,17 @@ defmodule BlogWeb.PostController do
     render(conn, :new, changeset: changeset)
   end
 
+  def add_comment(conn, %{"comment" => %{"content" => content, "post_id" => post_id}}) do
+    Comments.create_comment(%{content: content, post_id: post_id})
+    show(conn, %{"id" => post_id})
+  end
+
+  def delete_comment(conn, %{"id" => comment_id}) do
+    comment = Comments.get_comment!(comment_id)
+    Comments.delete_comment(comment)
+    show(conn, %{"id" => comment.post_id})
+  end
+
   def create(conn, %{"post" => post_params}) do
     case Posts.create_post(post_params) do
       {:ok, post} ->
@@ -36,8 +49,9 @@ defmodule BlogWeb.PostController do
   end
 
   def show(conn, %{"id" => id}) do
-    post = Posts.get_post!(id)
-    render(conn, :show, post: post)
+    post = Posts.get_post!(id, load_comments: true)
+    changeset = Comments.change_comment(%Comment{})
+    render(conn, :show, post: post, changeset: changeset)
   end
 
   def edit(conn, %{"id" => id}) do
