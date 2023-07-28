@@ -2,6 +2,7 @@ defmodule BlogWeb.PostControllerTest do
   use BlogWeb.ConnCase
 
   import Blog.PostsFixtures
+  import Blog.CommentsFixtures
 
   @create_attrs %{body: "some body", title: "some title"}
   @update_attrs %{body: "some updated body", title: "some updated title"}
@@ -99,6 +100,33 @@ defmodule BlogWeb.PostControllerTest do
         get(conn, ~p"/posts/#{post}")
       end
     end
+  end
+
+  describe "posts and comments" do
+    setup [:create_post_with_comments]
+
+    test "shows posts and comments", %{conn: conn, post: post, comment: comment} do
+      conn = get(conn, ~p"/posts/#{post}")
+      assert html_response(conn, 200) =~ "comments"
+      assert html_response(conn, 200) =~ comment.content
+    end
+
+    test "creates comments on POST", %{conn: conn, post: post, comment: existing_comment} do
+      content = Faker.Lorem.sentence()
+      conn = post(conn, ~p"/comments/", %{"comment" => %{"content" => content, "post_id" => post.id}})
+      assert html_response(conn, 200) =~ content
+      assert html_response(conn, 200) =~ existing_comment.content
+    end
+  end
+
+  defp create_post_with_comments(_) do
+    post = post_fixture()
+    comment = comment_fixture(%{post_id: post.id})
+
+    %{
+      post: post,
+      comment: comment
+    }
   end
 
   defp create_post(_) do

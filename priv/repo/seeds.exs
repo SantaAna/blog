@@ -12,6 +12,7 @@
 
 alias Blog.Repo
 alias Blog.Posts.Post
+alias Blog.Comments.Comment
 Faker.start()
 
 rus_post_list =
@@ -49,17 +50,25 @@ en_post_list =
   end
 
 Enum.each(rus_post_list, fn post_data ->
-  Post.changeset(
-    %Post{},
-    post_data
-  )
+  post =
+    Post.changeset(
+      %Post{},
+      post_data
+    )
+    |> Repo.insert!()
+
+  Comment.changeset(%Comment{}, %{content: Faker.Lorem.sentence(), post_id: post.id})
   |> Repo.insert!()
 end)
 
 Enum.each(en_post_list, fn post_data ->
-  Post.changeset(
-    %Post{},
-    post_data
-  )
+  post =
+    Post.changeset(
+      %Post{},
+      post_data
+    )
+    |> Repo.insert!()
+
+  Comment.changeset(%Comment{}, %{content: Faker.Lorem.sentence(), post_id: post.id})
   |> Repo.insert!()
 end)

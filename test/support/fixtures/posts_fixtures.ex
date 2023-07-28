@@ -13,7 +13,8 @@ defmodule Blog.PostsFixtures do
       |> Enum.into(%{
         body: Faker.Lorem.sentence(),
         title: Faker.Lorem.sentence(),
-        published_on: Faker.Date.between(Date.add(Date.utc_today, -30), Date.add(Date.utc_today, 30)),
+        published_on:
+          Faker.Date.between(Date.add(Date.utc_today(), -30), Date.add(Date.utc_today(), 30)),
         visible: Enum.random([true, false])
       })
       |> Blog.Posts.create_post()

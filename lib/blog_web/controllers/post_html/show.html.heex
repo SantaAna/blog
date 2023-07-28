@@ -1,18 +1,45 @@
-<.header>
-  Post <%= @post.id %>
-  <:subtitle>This is a post record from your database.</:subtitle>
-  <:actions>
-    <.link href={~p"/posts/#{@post}/edit"}>
-      <.button>Edit post</.button>
-    </.link>
-  </:actions>
-</.header>
+<div class="flex flex-col gap-5">
+  <.header>
+    Post <%= @post.id %>
+    <:subtitle>This is a post record from your database.</:subtitle>
+    <:actions>
+      <.link href={~p"/posts/#{@post}/edit"}>
+        <.button>Edit post</.button>
+      </.link>
+    </:actions>
+  </.header>
 
-<.list>
-  <:item title="Title"><%= @post.title %></:item>
-  <:item title="Body"><%= @post.body %></:item>
-  <:item title="Published On"><%= @post.published_on %></:item>
-  <:item title="Visible"><%= @post.visible %></:item>
-</.list>
+  <.list>
+    <:item title="Title"><%= @post.title %></:item>
+    <:item title="Body"><%= @post.body %></:item>
+    <:item title="Published On"><%= @post.published_on %></:item>
+    <:item title="Visible"><%= @post.visible %></:item>
+  </.list>
 
-<.back navigate={~p"/posts"}>Back to posts</.back>
+  <.simple_form :let={f} for={@changeset} action={~p"/comments"}>
+    <.input type="hidden" field={f[:post_id]} value={@post.id} />
+    <.input field={f[:content]} type="text" label="Content" />
+    <:actions>
+      <.button>Comment</.button>
+    </:actions>
+  </.simple_form>
+
+  <.header>
+    Comments
+    <:subtitle>These are the comments on this post.</:subtitle>
+  </.header>
+  <div class="flex flex-col gap-3">
+    <div :for={comment <- @post.comments}>
+      <div class="flex flex-row gap-4">
+        <div>
+          <%= comment.content %>
+        </div>
+        <.link href={~p"/comments/#{comment.id}"} method="delete">
+          <.button>Delete Comment</.button>
+        </.link>
+      </div>
+    </div>
+  </div>
+
+  <.back navigate={~p"/posts"}>Back to posts</.back>
+</div>

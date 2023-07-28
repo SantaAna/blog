@@ -52,7 +52,18 @@ defmodule Blog.Posts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id), do: Repo.get!(Post, id)
+  def get_post!(id, params \\ []) do
+    params = Keyword.put_new(params, :load_comments, false)
+
+    case params[:load_comments] do
+      true ->
+        Repo.get!(Post, id)
+        |> Repo.preload(:comments)
+
+      _ ->
+        Repo.get!(Post, id)
+    end
+  end
 
   @doc """
   Creates a post.
