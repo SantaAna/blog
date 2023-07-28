@@ -11,10 +11,10 @@ defmodule Blog.PostsFixtures do
     {:ok, post} =
       attrs
       |> Enum.into(%{
-        body: "some body",
-        title: "some title",
-        published_on: Date.utc_today(),
-        visible: true
+        body: Faker.Lorem.sentence(),
+        title: Faker.Lorem.sentence(),
+        published_on: Faker.Date.between(Date.add(Date.utc_today, -30), Date.add(Date.utc_today, 30)),
+        visible: Enum.random([true, false])
       })
       |> Blog.Posts.create_post()
 
