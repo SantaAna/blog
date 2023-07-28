@@ -16,12 +16,14 @@ Faker.start()
 
 rus_post_list =
   for x <- 1..10 do
-    title ="#{Faker.Lorem.Shakespeare.Ru.hamlet()} #{x}"
-    date = cond do
-      rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
-      rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
-      rem(x,3) == 2 -> Date.utc_today()
-    end
+    title = "#{Faker.Lorem.Shakespeare.Ru.hamlet()} #{x}"
+
+    date =
+      cond do
+        rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
+        rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
+        rem(x, 3) == 2 -> Date.utc_today()
+      end
 
     body = Faker.Lorem.Shakespeare.Ru.romeo_and_juliet()
 
@@ -32,12 +34,15 @@ rus_post_list =
 
 en_post_list =
   for x <- 1..10 do
-    title ="#{Faker.Lorem.Shakespeare.En.hamlet()} #{x}"
-    date = cond do
-      rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
-      rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
-      rem(x,3) == 2 -> Date.utc_today()
-    end
+    title = "#{Faker.Lorem.Shakespeare.En.hamlet()} #{x}"
+
+    date =
+      cond do
+        rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
+        rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
+        rem(x, 3) == 2 -> Date.utc_today()
+      end
+
     body = Faker.Lorem.paragraphs(3) |> Enum.join("\n")
     visible = rem(x, 2) == 0
     %{title: title, body: body, visible: visible, published_on: date}

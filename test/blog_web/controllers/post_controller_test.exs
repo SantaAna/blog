@@ -26,7 +26,7 @@ defmodule BlogWeb.PostControllerTest do
     end
 
     test "renders match on page", %{conn: conn} do
-      post_fixture(%{title: "hello world"})
+      post_fixture(%{title: "hello world", published_on: Date.utc_today(), visible: true})
       conn = get(conn, ~p"/posts/search", title: "hello")
       assert html_response(conn, 200) =~ "hello world"
     end
