@@ -113,7 +113,10 @@ defmodule BlogWeb.PostControllerTest do
 
     test "creates comments on POST", %{conn: conn, post: post, comment: existing_comment} do
       content = Faker.Lorem.sentence()
-      conn = post(conn, ~p"/comments/", %{"comment" => %{"content" => content, "post_id" => post.id}})
+
+      conn =
+        post(conn, ~p"/comments/", %{"comment" => %{"content" => content, "post_id" => post.id}})
+
       assert html_response(conn, 200) =~ content
       assert html_response(conn, 200) =~ existing_comment.content
     end
