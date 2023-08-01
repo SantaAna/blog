@@ -35,7 +35,8 @@ defmodule Blog.Posts do
     from p in Post,
       where: p.visible,
       where: p.published_on <= ^Date.utc_today(),
-      order_by: [desc: p.published_on]
+      order_by: [desc: p.published_on],
+      preload: [:user]
   end
 
   @doc """
@@ -52,17 +53,10 @@ defmodule Blog.Posts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id, params \\ []) do
-    params = Keyword.put_new(params, :load_comments, false)
-
-    case params[:load_comments] do
-      true ->
-        Repo.get!(Post, id)
-        |> Repo.preload(:comments)
-
-      _ ->
-        Repo.get!(Post, id)
-    end
+  def get_post!(id, preloads \\ []) do
+    query = from p in Post,
+       preload: ^preloads
+    Repo.get!(query, id)
   end
 
   @doc """

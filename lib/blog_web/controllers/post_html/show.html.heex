@@ -3,7 +3,7 @@
     Post <%= @post.id %>
     <:subtitle>This is a post record from your database.</:subtitle>
     <:actions>
-      <.link href={~p"/posts/#{@post}/edit"}>
+      <.link :if={@user_id == @post.user.id} href={~p"/posts/#{@post}/edit"}>
         <.button>Edit post</.button>
       </.link>
     </:actions>
@@ -11,12 +11,14 @@
 
   <.list>
     <:item title="Title"><%= @post.title %></:item>
+    <:item title="Author"><%= @post.user.username %></:item>
     <:item title="Body"><%= @post.body %></:item>
     <:item title="Published On"><%= @post.published_on %></:item>
     <:item title="Visible"><%= @post.visible %></:item>
   </.list>
 
-  <.simple_form :let={f} for={@changeset} action={~p"/comments"}>
+  <.simple_form :if={@user_id} :let={f} for={@changeset} action={~p"/comments"}>
+    <.input type="hidden" field={f[:user_id]} value={@user_id} />
     <.input type="hidden" field={f[:post_id]} value={@post.id} />
     <.input field={f[:content]} type="text" label="Content" />
     <:actions>
@@ -32,9 +34,12 @@
     <div :for={comment <- @post.comments}>
       <div class="flex flex-row gap-4">
         <div>
+          <%= comment.user.username %>
+        </div>
+        <div>
           <%= comment.content %>
         </div>
-        <.link href={~p"/comments/#{comment.id}"} method="delete">
+        <.link :if={@user_id == comment.user.id} href={~p"/comments/#{comment.id}"} method="delete">
           <.button>Delete Comment</.button>
         </.link>
       </div>

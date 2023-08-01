@@ -18,6 +18,12 @@ defmodule BlogWeb.Router do
   end
 
   scope "/", BlogWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    get "/posts/new", PostController, :new
+  end
+
+  scope "/", BlogWeb do
     pipe_through :browser
     get "/posts/search", PostController, :search
     resources "/posts", PostController

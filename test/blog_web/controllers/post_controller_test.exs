@@ -3,10 +3,15 @@ defmodule BlogWeb.PostControllerTest do
 
   import Blog.PostsFixtures
   import Blog.CommentsFixtures
+  import Blog.AccountsFixtures
 
   @create_attrs %{body: "some body", title: "some title"}
   @update_attrs %{body: "some updated body", title: "some updated title"}
   @invalid_attrs %{body: nil, title: nil}
+
+    setup do
+      {:ok, user_id: user_fixture().id}
+    end
 
   describe "index" do
     test "lists all posts", %{conn: conn} do
@@ -26,14 +31,14 @@ defmodule BlogWeb.PostControllerTest do
       assert html_response(conn, 200) =~ "wow"
     end
 
-    test "renders match on page", %{conn: conn} do
-      post_fixture(%{title: "hello world", published_on: Date.utc_today(), visible: true})
+    test "renders match on page", %{conn: conn, user_id: user_id} do
+      post_fixture(%{title: "hello world", published_on: Date.utc_today(), visible: true,  user_id: user_id})
       conn = get(conn, ~p"/posts/search", title: "hello")
       assert html_response(conn, 200) =~ "hello world"
     end
 
-    test "does not render non-match on page", %{conn: conn} do
-      post_fixture(%{title: "hello world"})
+    test "does not render non-match on page", %{conn: conn, user_id: user_id} do
+      post_fixture(%{title: "hello world", user_id: user_id})
       conn = get(conn, ~p"/posts/search", title: "blue")
       refute html_response(conn, 200) =~ "hello world"
     end
@@ -41,6 +46,8 @@ defmodule BlogWeb.PostControllerTest do
 
   describe "new post" do
     test "renders form", %{conn: conn} do
+      user = user_fixture(password: "HappyPuppy123")
+      conn = log_in_user(conn, user)
       conn = get(conn, ~p"/posts/new")
       assert html_response(conn, 200) =~ "New Post"
     end
@@ -48,7 +55,8 @@ defmodule BlogWeb.PostControllerTest do
 
   describe "create post" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/posts", post: @create_attrs)
+      user = user_fixture()
+      conn = post(conn, ~p"/posts", post: %{body: "body", title: "title", user_id: user.id})
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == ~p"/posts/#{id}"
@@ -123,8 +131,9 @@ defmodule BlogWeb.PostControllerTest do
   end
 
   defp create_post_with_comments(_) do
-    post = post_fixture()
-    comment = comment_fixture(%{post_id: post.id})
+    user = user_fixture()
+    post = post_fixture(%{user_id: user.id})
+    comment = comment_fixture(%{post_id: post.id, user_id: user.id})
 
     %{
       post: post,
@@ -133,7 +142,8 @@ defmodule BlogWeb.PostControllerTest do
   end
 
   defp create_post(_) do
-    post = post_fixture()
+user = user_fixture()
+    post = post_fixture(%{user_id: user.id})
     %{post: post}
   end
 end

@@ -4,6 +4,8 @@ defmodule BlogWeb.UserSettingsControllerTest do
   alias Blog.Accounts
   import Blog.AccountsFixtures
 
+  @placeholder_password "Hello World!"
+
   setup :register_and_log_in_user
 
   describe "GET /users/settings" do
@@ -25,7 +27,7 @@ defmodule BlogWeb.UserSettingsControllerTest do
       new_password_conn =
         put(conn, ~p"/users/settings", %{
           "action" => "update_password",
-          "current_password" => valid_user_password(),
+          "current_password" => @placeholder_password,
           "user" => %{
             "password" => "new valid password",
             "password_confirmation" => "new valid password"
@@ -69,7 +71,7 @@ defmodule BlogWeb.UserSettingsControllerTest do
       conn =
         put(conn, ~p"/users/settings", %{
           "action" => "update_email",
-          "current_password" => valid_user_password(),
+          "current_password" => @placeholder_password,
           "user" => %{"email" => unique_user_email()}
         })
 

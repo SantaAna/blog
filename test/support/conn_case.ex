@@ -45,7 +45,7 @@ defmodule BlogWeb.ConnCase do
   test context.
   """
   def register_and_log_in_user(%{conn: conn}) do
-    user = Blog.AccountsFixtures.user_fixture()
+    user = Blog.AccountsFixtures.user_fixture(%{password: "Hello World!"})
     %{conn: log_in_user(conn, user), user: user}
   end
 
