@@ -12,6 +12,7 @@
   <:col :let={post} label="Body"><%= post.body %></:col>
   <:col :let={post} label="Visible"><%= post.visible %></:col>
   <:col :let={post} label="Published On"><%= post.published_on %></:col>
+  <:col :let={post} label="Author"><%= post.user.username %></:col>
   <:action :let={post}>
     <div class="sr-only">
       <.link navigate={~p"/posts/#{post}"}>Show</.link>

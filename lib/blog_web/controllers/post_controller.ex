@@ -1,6 +1,7 @@
 defmodule BlogWeb.PostController do
   use BlogWeb, :controller
 
+  alias Blog.Accounts
   alias Blog.Posts
   alias Blog.Posts.Post
   alias Blog.Comments
@@ -21,13 +22,13 @@ defmodule BlogWeb.PostController do
   end
 
   def new(conn, _params) do
-    changeset = Posts.change_post(%Post{})
+    changeset = Posts.change_post(%Post{user_id: conn.assigns.current_user.id})
     render(conn, :new, changeset: changeset)
   end
 
-  def add_comment(conn, %{"comment" => %{"content" => content, "post_id" => post_id}}) do
-    Comments.create_comment(%{content: content, post_id: post_id})
-    show(conn, %{"id" => post_id})
+  def add_comment(conn, %{"comment" => attr}) do
+    Comments.create_comment(attr)
+    show(conn, %{"id" => attr["post_id"]})
   end
 
   def delete_comment(conn, %{"id" => comment_id}) do
@@ -49,9 +50,10 @@ defmodule BlogWeb.PostController do
   end
 
   def show(conn, %{"id" => id}) do
-    post = Posts.get_post!(id, load_comments: true)
+    user_id = Map.get(conn.assigns[:current_user], :id)
+    post = Posts.get_post!(id, [:user, comments: [:user]])
     changeset = Comments.change_comment(%Comment{})
-    render(conn, :show, post: post, changeset: changeset)
+    render(conn, :show, post: post, changeset: changeset, user_id: user_id)
   end
 
   def edit(conn, %{"id" => id}) do

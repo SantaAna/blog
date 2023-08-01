@@ -159,7 +159,8 @@ defmodule Blog.PostsTest do
     end
 
     test "create_post/1 with valid data creates a post", state do
-      valid_attrs = %{body: "some body", title: "some title"}
+
+      valid_attrs = %{body: "some body", title: "some title", user_id: state[:user_id]}
 
       assert {:ok, %Post{} = post} = Posts.create_post(valid_attrs)
       assert post.body == "some body"
