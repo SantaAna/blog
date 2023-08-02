@@ -20,7 +20,9 @@ defmodule BlogWeb.Router do
   scope "/", BlogWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    get "/posts/new", PostController, :new
+    resources "posts", PostController, only: [:new, :create, :edit, :update, :delete]
+    post "/comments", PostController, :add_comment
+    delete "/comments/:id", PostController, :delete_comment
   end
 
   scope "/", BlogWeb do
@@ -28,8 +30,6 @@ defmodule BlogWeb.Router do
     get "/posts/search", PostController, :search
     resources "/posts", PostController
     get "/", PageController, :home
-    post "/comments", PostController, :add_comment
-    delete "/comments/:id", PostController, :delete_comment
   end
 
   # Other scopes may use custom stacks.

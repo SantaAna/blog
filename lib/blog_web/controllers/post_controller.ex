@@ -7,18 +7,23 @@ defmodule BlogWeb.PostController do
   alias Blog.Comments
   alias Blog.Comments.Comment
 
+  plug :require_user_owns_post when action in [:edit, :update, :delete]
+
   def search(conn, %{"title" => title_query}) do
+    user_id = Map.get(conn.assigns[:current_user] || %{}, :id)
     matches = Posts.search_by_title(title_query)
-    render(conn, :search, title_query: title_query, matches: matches)
+    render(conn, :search, title_query: title_query, matches: matches, user_id: user_id)
   end
 
   def search(conn, _params) do
-    render(conn, :search, title_query: nil, matches: [])
+    user_id = Map.get(conn.assigns[:current_user] || %{}, :id)
+    render(conn, :search, title_query: nil, matches: [], user_id: user_id)
   end
 
   def index(conn, _params) do
     posts = Posts.list_posts()
-    render(conn, :index, posts: posts)
+    user_id = Map.get(conn.assigns[:current_user] || %{}, :id)
+    render(conn, :index, posts: posts, user_id: user_id)
   end
 
   def new(conn, _params) do
@@ -50,16 +55,40 @@ defmodule BlogWeb.PostController do
   end
 
   def show(conn, %{"id" => id}) do
-    user_id = Map.get(conn.assigns[:current_user], :id)
+    user_id = Map.get(conn.assigns[:current_user] || %{}, :id)
     post = Posts.get_post!(id, [:user, comments: [:user]])
     changeset = Comments.change_comment(%Comment{})
     render(conn, :show, post: post, changeset: changeset, user_id: user_id)
   end
 
   def edit(conn, %{"id" => id}) do
+    user_id = conn.assigns[:current_user].id
     post = Posts.get_post!(id)
-    changeset = Posts.change_post(post)
-    render(conn, :edit, post: post, changeset: changeset)
+
+    if user_id == post.user_id do
+      changeset = Posts.change_post(post)
+      render(conn, :edit, post: post, changeset: changeset)
+    else
+      conn
+      |> put_flash(:error, "You must log in to access this page.")
+      |> redirect(to: ~p"/posts")
+      |> halt()
+    end
+  end
+
+  # TODO something similar for comments
+  defp require_user_owns_post(conn, _params) do
+    post_id = String.to_integer(conn.path_params["id"])
+    post = Posts.get_post!(post_id)
+
+    if conn.assigns[:current_user].id == post.user_id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You must log in to access this page.")
+      |> redirect(to: ~p"/posts")
+      |> halt()
+    end
   end
 
   def update(conn, %{"id" => id, "post" => post_params}) do

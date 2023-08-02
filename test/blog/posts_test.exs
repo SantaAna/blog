@@ -1,5 +1,6 @@
 defmodule Blog.PostsTest do
   use Blog.DataCase
+  alias Blog.Repo
 
   alias Blog.Posts
 
@@ -32,7 +33,8 @@ defmodule Blog.PostsTest do
           user_id: state[:user_id]
         })
 
-      assert Posts.search_by_title("") == [today_post, yesterday_post]
+      assert Posts.search_by_title("") ==
+               [today_post, yesterday_post] |> Enum.map(&Repo.preload(&1, :user))
     end
 
     test "search_by_title/1 does not display posts dated in the future", state do
@@ -60,7 +62,7 @@ defmodule Blog.PostsTest do
         user_id: state[:user_id]
       })
 
-      assert Posts.search_by_title("hello") == [match]
+      assert Posts.search_by_title("hello") == [match] |> Enum.map(&Repo.preload(&1, :user))
     end
 
     test "search_by_title/1 return multiple matches", state do
@@ -87,7 +89,8 @@ defmodule Blog.PostsTest do
         user_id: state[:user_id]
       })
 
-      expected = [match1, match2]
+      expected = Enum.map([match1, match2], &Repo.preload(&1, :user))
+
       result = Posts.search_by_title("hello")
 
       assert Enum.sort(result) == Enum.sort(expected)
@@ -113,7 +116,7 @@ defmodule Blog.PostsTest do
       expected = [match1, match2]
       result = Posts.search_by_title("hello")
 
-      assert Enum.sort(result) == Enum.sort(expected)
+      assert Enum.sort(result) == Enum.sort(expected) |> Enum.map(&Repo.preload(&1, :user))
     end
 
     test "list_posts/0 does not return visible: false posts", state do
@@ -132,7 +135,8 @@ defmodule Blog.PostsTest do
           user_id: state[:user_id]
         })
 
-      assert Posts.list_posts() == [today_post, yesterday_post]
+      assert Posts.list_posts() ==
+               [today_post, yesterday_post] |> Enum.map(&Repo.preload(&1, :user))
     end
 
     test "list_posts/0 does not display posts dated in the future", state do
@@ -143,6 +147,7 @@ defmodule Blog.PostsTest do
     test "list_posts/0 returns all posts", state do
       post =
         post_fixture(%{published_on: Date.utc_today(), visible: true, user_id: state[:user_id]})
+        |> Repo.preload(:user)
 
       assert Posts.list_posts() == [post]
     end
@@ -155,11 +160,10 @@ defmodule Blog.PostsTest do
     test "get_post!/2 returns the post with given id and comments", state do
       post = post_fixture(%{user_id: state[:user_id]})
       comment = comment_fixture(%{post_id: post.id, user_id: state[:user_id]})
-      assert Posts.get_post!(post.id, load_comments: true).comments == [comment]
+      assert Posts.get_post!(post.id, [:comments]).comments == [comment]
     end
 
     test "create_post/1 with valid data creates a post", state do
-
       valid_attrs = %{body: "some body", title: "some title", user_id: state[:user_id]}
 
       assert {:ok, %Post{} = post} = Posts.create_post(valid_attrs)
