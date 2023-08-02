@@ -7,6 +7,7 @@
 </.simple_form>
 <.table id="posts" rows={@matches}>
   <:col :let={match} label="Title"><%= match.title %></:col>
+  <:col :let={match} label="Author"><%= match.user.username %></:col>
   <:col :let={match} label="Body"><%= match.body %></:col>
   <:col :let={match} label="Published On"><%= match.published_on %></:col>
   <:col :let={match} label="Visible"><%= match.visible %></:col>
@@ -14,10 +15,10 @@
     <.link navigate={~p"/posts/#{match}"}>Show</.link>
   </:action>
   <:action :let={match}>
-    <.link navigate={~p"/posts/#{match}/edit"}>Edit</.link>
+    <.link :if={@user_id == match.user.id} navigate={~p"/posts/#{match}/edit"}>Edit</.link>
   </:action>
   <:action :let={match}>
-    <.link href={~p"/posts/#{match}"} method="delete" data-confirm="Are you sure?">
+    <.link :if={@user_id == match.user.id} href={~p"/posts/#{match}"} method="delete" data-confirm="Are you sure?">
       Delete
     </.link>
   </:action>

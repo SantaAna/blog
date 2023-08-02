@@ -9,9 +9,9 @@ defmodule BlogWeb.PostControllerTest do
   @update_attrs %{body: "some updated body", title: "some updated title"}
   @invalid_attrs %{body: nil, title: nil}
 
-    setup do
-      {:ok, user_id: user_fixture().id}
-    end
+  setup do
+    {:ok, user_id: user_fixture().id}
+  end
 
   describe "index" do
     test "lists all posts", %{conn: conn} do
@@ -32,7 +32,13 @@ defmodule BlogWeb.PostControllerTest do
     end
 
     test "renders match on page", %{conn: conn, user_id: user_id} do
-      post_fixture(%{title: "hello world", published_on: Date.utc_today(), visible: true,  user_id: user_id})
+      post_fixture(%{
+        title: "hello world",
+        published_on: Date.utc_today(),
+        visible: true,
+        user_id: user_id
+      })
+
       conn = get(conn, ~p"/posts/search", title: "hello")
       assert html_response(conn, 200) =~ "hello world"
     end
@@ -74,21 +80,61 @@ defmodule BlogWeb.PostControllerTest do
   describe "edit post" do
     setup [:create_post]
 
-    test "renders form for editing chosen post", %{conn: conn, post: post} do
+    test "redirects unauthenticated user from form for editing chosen post", %{
+      conn: conn,
+      post: post
+    } do
       conn = get(conn, ~p"/posts/#{post}/edit")
-      assert html_response(conn, 200) =~ "Edit Post"
+      assert html_response(conn, 302) =~ "redirect"
+    end
+
+    test "redirects user that does not own post", %{conn: conn} do
+      not_owner = user_fixture()
+      post = post_fixture(user_id: user_fixture().id)
+      conn = log_in_user(conn, not_owner)
+      conn = get(conn, ~p"/posts/#{post}/edit")
+      assert html_response(conn, 302) =~ "redirect"
+    end
+
+    test "renders form for editing post if user is authenticated and owns post", %{conn: conn} do
+      user = user_fixture()
+      post = post_fixture(user_id: user.id)
+      conn = log_in_user(conn, user)
+      conn = get(conn, ~p"/posts/#{post}/edit")
+      assert html_response(conn, 200) =~ "Edit"
     end
   end
 
   describe "update post" do
     setup [:create_post]
 
-    test "redirects when data is valid", %{conn: conn, post: post} do
+    test "redirects when no user is set", %{conn: conn, post: post} do
       conn = put(conn, ~p"/posts/#{post}", post: @update_attrs)
-      assert redirected_to(conn) == ~p"/posts/#{post}"
+      assert redirected_to(conn) == ~p"/users/log_in"
+    end
 
-      conn = get(conn, ~p"/posts/#{post}")
-      assert html_response(conn, 200) =~ "some updated body"
+    test "redirects when non-owning user is set", %{conn: conn} do
+      post = post_fixture(user_id: user_fixture().id)
+      non_owner = user_fixture()
+
+      conn =
+        conn
+        |> log_in_user(non_owner)
+        |> put(~p"/posts/#{post}", post: @update_attrs)
+
+      assert redirected_to(conn) == ~p"/posts"
+    end
+
+    test "redirects when user is valid", %{conn: conn} do
+      owning_user = user_fixture()
+      post = post_fixture(user_id: owning_user.id)
+
+      conn =
+        conn
+        |> log_in_user(owning_user)
+        |> put(~p"/posts/#{post}", post: @update_attrs)
+
+      assert redirected_to(conn) == ~p"/posts/#{post}"
     end
 
     test "renders errors when data is invalid", %{conn: conn, post: post} do
@@ -100,13 +146,43 @@ defmodule BlogWeb.PostControllerTest do
   describe "delete post" do
     setup [:create_post]
 
-    test "deletes chosen post", %{conn: conn, post: post} do
+    test "redirects with no logged in user, post not deleted", %{
+      conn: conn,
+      post: post
+    } do
       conn = delete(conn, ~p"/posts/#{post}")
+      assert redirected_to(conn) == ~p"/users/log_in"
+
+      conn = get(conn, ~p"/posts/#{post}")
+      assert html_response(conn, 200) =~ post.body
+    end
+
+    test "redirects with non-owner user, post not deleted", %{conn: conn} do
+      non_owner = user_fixture()
+      post = post_fixture(user_id: user_fixture().id)
+
+      conn =
+        conn
+        |> log_in_user(non_owner)
+        |> delete(~p"/posts/#{post}")
+
       assert redirected_to(conn) == ~p"/posts"
 
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/posts/#{post}")
-      end
+      conn = get(conn, ~p"/posts/#{post}")
+      assert html_response(conn, 200) =~ post.body
+    end
+
+    test "deletes post with owner user, redirects to posts", %{conn: conn} do
+      owner = user_fixture()
+      post = post_fixture(user_id: owner.id)
+
+      conn =
+        conn
+        |> log_in_user(owner)
+        |> delete(~p"/posts/#{post}")
+
+      assert redirected_to(conn) == ~p"/posts"
+      assert_raise Ecto.NoResultsError, fn -> get(conn, ~p"/posts/#{post}") end
     end
   end
 
@@ -119,14 +195,31 @@ defmodule BlogWeb.PostControllerTest do
       assert html_response(conn, 200) =~ comment.content
     end
 
-    test "creates comments on POST", %{conn: conn, post: post, comment: existing_comment} do
+    test "does not create comments on POST if not logged in, redirects", %{
+      conn: conn,
+      post: post,
+      comment: existing_comment
+    } do
       content = Faker.Lorem.sentence()
 
       conn =
         post(conn, ~p"/comments/", %{"comment" => %{"content" => content, "post_id" => post.id}})
 
-      assert html_response(conn, 200) =~ content
-      assert html_response(conn, 200) =~ existing_comment.content
+      assert redirected_to(conn) == ~p"/users/log_in"
+    end
+
+    test "creates comment if user is logged in", %{conn: conn} do
+      user = user_fixture()
+      post = post_fixture(user_id: user.id)
+
+      content = Faker.Lorem.sentence()
+
+      conn =
+        conn
+        |> log_in_user(user)
+        |> post(~p"/comments/", %{"comment" => %{"content" => content, "post_id" => post.id}})
+
+      # LEFT OFF HERE!
     end
   end
 
@@ -142,7 +235,7 @@ defmodule BlogWeb.PostControllerTest do
   end
 
   defp create_post(_) do
-user = user_fixture()
+    user = user_fixture()
     post = post_fixture(%{user_id: user.id})
     %{post: post}
   end
