@@ -17,7 +17,7 @@
     <:item title="Visible"><%= @post.visible %></:item>
   </.list>
 
-  <.simple_form :if={@user_id} :let={f} for={@changeset} action={~p"/comments"}>
+  <.simple_form :let={f} :if={@user_id} for={@changeset} action={~p"/comments"}>
     <.input type="hidden" field={f[:user_id]} value={@user_id} />
     <.input type="hidden" field={f[:post_id]} value={@post.id} />
     <.input field={f[:content]} type="text" label="Content" />
@@ -39,7 +39,11 @@
         <div>
           <%= comment.content %>
         </div>
-        <.link :if={@user_id == comment.user.id} href={~p"/comments/#{comment.id}"} method="delete">
+        <.link
+          :if={@user_id == comment.user.id}
+          href={~p"/comments/#{comment.id}"}
+          method="delete"
+        >
           <.button>Delete Comment</.button>
         </.link>
       </div>

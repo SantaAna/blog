@@ -13,62 +13,90 @@
 alias Blog.Repo
 alias Blog.Posts.Post
 alias Blog.Comments.Comment
+alias Blog.Tags.Tag
+alias Blog.Accounts.User
+
 Faker.start()
 
-rus_post_list =
-  for x <- 1..10 do
-    title = "#{Faker.Lorem.Shakespeare.Ru.hamlet()} #{x}"
+user =
+  Repo.insert!(%User{
+    username: "shawn",
+    password: "123456789012",
+    email: "shawn@gmail.com",
+    hashed_password: "123456789012"
+  })
 
-    date =
-      cond do
-        rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
-        rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
-        rem(x, 3) == 2 -> Date.utc_today()
-      end
+for x <- 1..10 do
+  title = "#{Faker.Lorem.Shakespeare.Ru.hamlet()} #{x}"
 
-    body = Faker.Lorem.Shakespeare.Ru.romeo_and_juliet()
+  date =
+    cond do
+      rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
+      rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
+      rem(x, 3) == 2 -> Date.utc_today()
+    end
 
-    visible = rem(x, 2) == 0
+  body = Faker.Lorem.Shakespeare.Ru.romeo_and_juliet()
 
-    %{title: title, body: body, visible: visible, published_on: date}
-  end
+  visible = rem(x, 2) == 0
+  tags = [:ready, :set, :go]
+  tag = Enum.random(tags)
 
-en_post_list =
-  for x <- 1..10 do
-    title = "#{Faker.Lorem.Shakespeare.En.hamlet()} #{x}"
-
-    date =
-      cond do
-        rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
-        rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
-        rem(x, 3) == 2 -> Date.utc_today()
-      end
-
-    body = Faker.Lorem.paragraphs(3) |> Enum.join("\n")
-    visible = rem(x, 2) == 0
-    %{title: title, body: body, visible: visible, published_on: date}
-  end
-
-Enum.each(rus_post_list, fn post_data ->
   post =
     Post.changeset(
       %Post{},
-      post_data
+      %{
+        user_id: user.id,
+        title: title,
+        body: body,
+        visible: visible,
+        published_on: date,
+        tags: tag
+      }
     )
     |> Repo.insert!()
 
-  Comment.changeset(%Comment{}, %{content: Faker.Lorem.sentence(), post_id: post.id})
+  Comment.changeset(%Comment{}, %{
+    content: Faker.Lorem.sentence(),
+    post_id: post.id,
+    user_id: user.id
+  })
   |> Repo.insert!()
-end)
+end
 
-Enum.each(en_post_list, fn post_data ->
+for x <- 1..10 do
+  title = "#{Faker.Lorem.Shakespeare.En.hamlet()} #{x}"
+
+  date =
+    cond do
+      rem(x, 3) == 0 -> Faker.Date.forward(Enum.random(1..100))
+      rem(x, 3) == 1 -> Faker.Date.backward(Enum.random(1..100))
+      rem(x, 3) == 2 -> Date.utc_today()
+    end
+
+  body = Faker.Lorem.paragraphs(3) |> Enum.join("\n")
+  visible = rem(x, 2) == 0
+  tags = [:ready, :set, :go]
+  tag = Enum.random(tags)
+
   post =
     Post.changeset(
       %Post{},
-      post_data
+      %{
+        title: title,
+        body: body,
+        visible: visible,
+        published_on: date,
+        tags: tag,
+        user_id: user.id
+      }
     )
     |> Repo.insert!()
 
-  Comment.changeset(%Comment{}, %{content: Faker.Lorem.sentence(), post_id: post.id})
+  Comment.changeset(%Comment{}, %{
+    content: Faker.Lorem.sentence(),
+    post_id: post.id,
+    user_id: user.id
+  })
   |> Repo.insert!()
-end)
+end
