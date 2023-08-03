@@ -30,6 +30,7 @@ defmodule BlogWeb.Router do
     get "/posts/search", PostController, :search
     resources "/posts", PostController
     get "/", PageController, :home
+    get "/tags", TagController, :tag
   end
 
   # Other scopes may use custom stacks.

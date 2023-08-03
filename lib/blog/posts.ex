@@ -54,8 +54,10 @@ defmodule Blog.Posts do
 
   """
   def get_post!(id, preloads \\ []) do
-    query = from p in Post,
-       preload: ^preloads
+    query =
+      from p in Post,
+        preload: ^preloads
+
     Repo.get!(query, id)
   end
 
