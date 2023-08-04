@@ -3,6 +3,7 @@ defmodule BlogWeb.PostController do
 
   alias Blog.Accounts
   alias Blog.Posts
+  alias Blog.Tags
   alias Blog.Posts.Post
   alias Blog.Comments
   alias Blog.Comments.Comment
@@ -28,9 +29,10 @@ defmodule BlogWeb.PostController do
 
   def new(conn, _params) do
     changeset = Posts.change_post(%Post{user_id: conn.assigns.current_user.id})
-    render(conn, :new, changeset: changeset)
+    render(conn, :new, changeset: changeset, tag_names: "")
   end
 
+  @spec add_comment(Plug.Conn.t(), map) :: Plug.Conn.t()
   def add_comment(conn, %{"comment" => attr}) do
     Comments.create_comment(attr)
     show(conn, %{"id" => attr["post_id"]})
@@ -43,14 +45,20 @@ defmodule BlogWeb.PostController do
   end
 
   def create(conn, %{"post" => post_params}) do
-    case Posts.create_post(post_params) do
+    tags =
+      post_params["tag_names"]
+      |> String.split(",")
+      |> Enum.reject(&(&1 == ""))
+      |> Tags.create_tag_list()
+
+    case Posts.create_post(post_params, tags) do
       {:ok, post} ->
         conn
         |> put_flash(:info, "Post created successfully.")
         |> redirect(to: ~p"/posts/#{post}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        render(conn, :new, changeset: changeset, tag_names: "")
     end
   end
 
@@ -63,11 +71,12 @@ defmodule BlogWeb.PostController do
 
   def edit(conn, %{"id" => id}) do
     user_id = conn.assigns[:current_user].id
-    post = Posts.get_post!(id)
+    post = Posts.get_post!(id, [:tags])
+    tag_names = Enum.map(post.tags, & &1.name) |> Enum.join(",")
 
     if user_id == post.user_id do
-      changeset = Posts.change_post(post)
-      render(conn, :edit, post: post, changeset: changeset)
+      changeset = Posts.change_post(post, %{}, post.tags)
+      render(conn, :edit, post: post, changeset: changeset, tag_names: tag_names)
     else
       conn
       |> put_flash(:error, "You must log in to access this page.")
@@ -92,9 +101,14 @@ defmodule BlogWeb.PostController do
   end
 
   def update(conn, %{"id" => id, "post" => post_params}) do
-    post = Posts.get_post!(id)
+    post = Posts.get_post!(id, [:tags])
 
-    case Posts.update_post(post, post_params) do
+    tags =
+      post_params["tag_names"]
+      |> String.split(",")
+      |> Tags.create_tag_list()
+
+    case Posts.update_post(post, post_params, tags) do
       {:ok, post} ->
         conn
         |> put_flash(:info, "Post updated successfully.")

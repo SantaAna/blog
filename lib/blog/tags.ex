@@ -101,4 +101,17 @@ defmodule Blog.Tags do
   def change_tag(%Tag{} = tag, attrs \\ %{}) do
     Tag.changeset(tag, attrs)
   end
+
+  @spec create_tag_list(list(String.t())) :: list(Tag.t())
+  def create_tag_list(list) do
+    list
+    |> Enum.map(fn name -> [name, Repo.get_by(Tag, name: name)] end)
+    |> Enum.map(fn
+      [name, nil] ->
+        create_tag(%{name: name})
+
+      [_name, match] ->
+        match
+    end)
+  end
 end

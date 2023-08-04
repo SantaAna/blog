@@ -6,7 +6,7 @@ defmodule BlogWeb.PostControllerTest do
   import Blog.AccountsFixtures
 
   @create_attrs %{body: "some body", title: "some title"}
-  @update_attrs %{body: "some updated body", title: "some updated title"}
+  @update_attrs %{body: "some updated body", title: "some updated title", tag_names: ""}
   @invalid_attrs %{body: nil, title: nil}
 
   setup do

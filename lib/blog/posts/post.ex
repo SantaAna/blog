@@ -9,11 +9,20 @@ defmodule Blog.Posts.Post do
     field :published_on, :date
     belongs_to :user, Blog.Accounts.User
     has_many :comments, Blog.Comments.Comment
-    many_to_many :tags, Blog.Tags.Tag, join_through: "posts_tags"
+    many_to_many :tags, Blog.Tags.Tag, join_through: "posts_tags", on_replace: :delete
 
     timestamps()
   end
 
+  @spec changeset(
+          {map, map}
+          | %{
+              :__struct__ => atom | %{:__changeset__ => map, optional(any) => any},
+              optional(atom) => any
+            },
+          :invalid | %{optional(:__struct__) => none, optional(atom | binary) => any},
+          any
+        ) :: Ecto.Changeset.t()
   @doc false
   def changeset(post, attrs, tags \\ []) do
     post
