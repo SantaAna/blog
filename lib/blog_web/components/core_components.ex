@@ -198,6 +198,53 @@ defmodule BlogWeb.CoreComponents do
     """
   end
 
+  attr(:for, :any, required: true, doc: "the datastructure for the form")
+  attr(:as, :any, default: nil, doc: "the server side parameter to collect all input under")
+
+  attr(:rest, :global,
+    include: ~w(autocomplete name rel action enctype method novalidate target),
+    doc: "the arbitrary HTML attributes to apply to the form tag"
+  )
+
+  slot(:inner_block, required: true)
+  slot(:actions, doc: "the slot for form actions, such as a submit button")
+
+  def comment_form(assigns) do
+    ~H"""
+    <.form :let={f} for={@for} as={@as} {@rest}>
+      <div class="mt-10 space-y-8 bg-yellow-200 border-4 border-black chunky-shadow p-6">
+        <%= render_slot(@inner_block, f) %>
+        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+          <%= render_slot(action, f) %>
+        </div>
+      </div>
+    </.form>
+    """
+  end
+
+  attr(:type, :string, default: nil)
+  attr(:class, :string, default: nil)
+  attr(:rest, :global, include: ~w(disabled form name value))
+
+  slot(:inner_block, required: true)
+
+  def submit_comment_button(assigns) do
+    ~H"""
+    <button
+      type={@type}
+      class={[
+        "phx-submit-loading:opacity-75 rounded-lg bg-nav hover:text-fuchsia-400 py-2 px-3",
+        "text-lg font-semibold font-inter leading-6 border-black border-2 chunky-shadow",
+        @class
+      ]}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </button>
+    """
+  end
+
+
   @doc """
   Renders a button.
 
@@ -363,6 +410,76 @@ defmodule BlogWeb.CoreComponents do
     """
   end
 
+  attr(:id, :any, default: nil)
+  attr(:name, :any)
+  attr(:label, :string, default: nil)
+  attr(:value, :any)
+
+  attr(:type, :string,
+    default: "text",
+    values: ~w(checkbox color date datetime-local email file hidden month number password
+               range radio search select tel text textarea time url week)
+  )
+
+  attr(:field, Phoenix.HTML.FormField,
+    doc: "a form field struct retrieved from the form, for example: @form[:email]"
+  )
+
+  attr(:errors, :list, default: [])
+  attr(:checked, :boolean, doc: "the checked flag for checkbox inputs")
+  attr(:prompt, :string, default: nil, doc: "the prompt for select inputs")
+  attr(:options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2")
+  attr(:multiple, :boolean, default: false, doc: "the multiple flag for select inputs")
+
+  attr(:rest, :global,
+    include: ~w(autocomplete cols disabled form list max maxlength min minlength
+                pattern placeholder readonly required rows size step)
+  )
+
+  slot(:inner_block)
+
+  def comment_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    assigns
+    |> assign(field: nil, id: assigns.id || field.id)
+    |> assign(:errors, Enum.map(field.errors, &translate_error(&1)))
+    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
+    |> assign_new(:value, fn -> field.value end)
+    |> comment_input()
+  end
+
+  def comment_input(assigns) do
+    ~H"""
+    <div phx-feedback-for={@name}>
+      <.comment_label for={@id}><%= @label %></.comment_label>
+      <input
+        type={@type}
+        name={@name}
+        id={@id}
+        value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+        class={[
+          "mt-2 block w-full text-black font-inter text-3xl bg-yellow-200 border-black border-2 focus:ring-0 sm:text-sm sm:leading-6 outline-none appearance-none",
+          "focus:border-4 focus:outline-none focus:shadow-none",
+          @errors != [] && "border-rose-400 focus:border-rose-400"
+        ]}
+        {@rest}
+      />
+      <.error :for={msg <- @errors}><%= msg %></.error>
+    </div>
+    """
+  end
+
+
+  attr(:for, :string, default: nil)
+  slot(:inner_block, required: true)
+
+  def comment_label(assigns) do
+    ~H"""
+    <label for={@for} class="block text-xl font-inter font-bold leading-6 text-black">
+      <%= render_slot(@inner_block) %>
+    </label>
+    """
+  end
+
   @doc """
   Renders a label.
   """
@@ -376,6 +493,7 @@ defmodule BlogWeb.CoreComponents do
     </label>
     """
   end
+
 
   @doc """
   Generates a generic error message.
@@ -577,6 +695,14 @@ defmodule BlogWeb.CoreComponents do
    """ 
   end
 
+  slot(:inner_block, required: true)
+
+  def comment_button(assigns) do
+   ~H"""
+    <h2 class="float-right border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-8 absolute -top-6 right-10 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200" phx-click={show("#comment-form")}> <%= render_slot(@inner_block) %> </h2>
+   """ 
+  end
+
  attr :class, :string, default: nil  
  slot(:inner_block, required: true)
  slot(:post_button)
@@ -601,6 +727,17 @@ defmodule BlogWeb.CoreComponents do
       <div class="text-lg font-semibold"> <%= @post.body %> </div>
     </div>
     """ 
+  end
+
+  attr :comment, :map, required: true
+  attr :class, :string, default: nil
+  def comment(assigns) do
+  ~H"""
+  <div class={["border-4 border-black chunky-shadow p-6 font-inter", @class]}>
+    <div class="text-xl font-bold mb-5">from <%= @comment.user.username %></div>
+    <div class="text-lg font-semibold"> <%= @comment.content %> </div>
+  </div>
+  """
   end
 
   @doc """
