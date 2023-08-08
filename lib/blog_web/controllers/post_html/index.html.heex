@@ -1,32 +1,37 @@
-<.header>
-  Listing Posts
-  <:actions>
-    <.link href={~p"/posts/new"}>
-      <.button>New Post</.button>
-    </.link>
-  </:actions>
-</.header>
+<.post_title class="bg-color-post-title">
+  Posts
+  <:post_button>
+    <.post_button :if={@user_id}>Post!</.post_button>
+  </:post_button>
+</.post_title>
+<div class="flex flex-col gap-5">
+  <div id="post-form" class="hidden">
+    <.post_form changeset={@changeset} action={~p"/posts"} tag_names={@tag_names} />
+  </div>
+  <.post_card :for={post <- @posts} post={post} />
+</div>
 
-<.table id="posts" rows={@posts} row_click={&JS.navigate(~p"/posts/#{&1}")}>
-  <:col :let={post} label="Title"><%= post.title %></:col>
-  <:col :let={post} label="Body"><%= post.body %></:col>
-  <:col :let={post} label="Visible"><%= post.visible %></:col>
-  <:col :let={post} label="Published On"><%= post.published_on %></:col>
-  <:col :let={post} label="Author"><%= post.user.username %></:col>
-  <:action :let={post}>
-    <div class="sr-only">
-      <.link navigate={~p"/posts/#{post}"}>Show</.link>
-    </div>
-    <.link :if={@user_id == post.user.id} navigate={~p"/posts/#{post}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={post}>
-    <.link
-      :if={@user_id == post.user.id}
-      href={~p"/posts/#{post}"}
-      method="delete"
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
-</.table>
+<%!-- keeping for reference --%>
+<%!-- <.table id="posts" rows={@posts} row_click={&JS.navigate(~p"/posts/#{&1}")}> --%>
+<%!--   <:col :let={post} label="Title"><%= post.title %></:col> --%>
+<%!--   <:col :let={post} label="Body"><%= post.body %></:col> --%>
+<%!--   <:col :let={post} label="Visible"><%= post.visible %></:col> --%>
+<%!--   <:col :let={post} label="Published On"><%= post.published_on %></:col> --%>
+<%!--   <:col :let={post} label="Author"><%= post.user.username %></:col> --%>
+<%!--   <:action :let={post}> --%>
+<%!--     <div class="sr-only"> --%>
+<%!--       <.link navigate={~p"/posts/#{post}"}>Show</.link> --%>
+<%!--     </div> --%>
+<%!--     <.link :if={@user_id == post.user.id} navigate={~p"/posts/#{post}/edit"}>Edit</.link> --%>
+<%!--   </:action> --%>
+<%!--   <:action :let={post}> --%>
+<%!--     <.link --%>
+<%!--       :if={@user_id == post.user.id} --%>
+<%!--       href={~p"/posts/#{post}"} --%>
+<%!--       method="delete" --%>
+<%!--       data-confirm="Are you sure?" --%>
+<%!--     > --%>
+<%!--       Delete --%>
+<%!--     </.link> --%>
+<%!--   </:action> --%>
+<%!-- </.table> --%>

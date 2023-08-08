@@ -108,7 +108,8 @@ defmodule Blog.Tags do
     |> Enum.map(fn name -> [name, Repo.get_by(Tag, name: name)] end)
     |> Enum.map(fn
       [name, nil] ->
-        create_tag(%{name: name})
+       {:ok, tag} = create_tag(%{name: name})
+       tag
 
       [_name, match] ->
         match

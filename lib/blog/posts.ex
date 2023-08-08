@@ -8,11 +8,11 @@ defmodule Blog.Posts do
 
   alias Blog.Posts.Post
 
-  def search_by_title(title) do
+  def search_by_title(title, preloads \\ [:user]) do
     search_string = "%#{title}%"
 
     match_query =
-      from p in visible_posts_query(),
+      from p in visible_posts_query(preloads),
         where: ilike(p.title, ^search_string)
 
     Repo.all(match_query)
@@ -27,16 +27,16 @@ defmodule Blog.Posts do
       [%Post{}, ...]
 
   """
-  def list_posts do
-    Repo.all(visible_posts_query())
+  def list_posts(preloads \\ [:user]) do
+    Repo.all(visible_posts_query(preloads))
   end
 
-  defp visible_posts_query do
+  defp visible_posts_query(preloads \\ [:user]) do
     from p in Post,
       where: p.visible,
       where: p.published_on <= ^Date.utc_today(),
       order_by: [desc: p.published_on],
-      preload: [:user]
+      preload: ^preloads 
   end
 
   @doc """
