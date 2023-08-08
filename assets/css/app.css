@@ -1,5 +1,28 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 /* This file is for your main application CSS */
+.bg-color-nav {
+    background-color: #699BF7;
+}
+
+.txt-active{
+  color: #D3639A;
+}
+
+.bg-color-welcome {
+    background-color: #D3639A;
+}
+
+.bg-color-post {
+    background-color: #FFB977;
+}
+
+.bg-color-global {
+    background-color: #0fa858
+}
+
+.chunky-shadow {
+  box-shadow: 7px 7px 0px black;
+}

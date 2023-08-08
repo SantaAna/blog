@@ -12,6 +12,9 @@ module.exports = {
     "../lib/*_web/**/*.*ex"
   ],
   theme: {
+    fontFamily: {
+      'inter': '"Inter"'
+    },
     extend: {
       colors: {
         brand: "#FD4F00",
