@@ -1,9 +1,14 @@
-<.post_title class="bg-color-post-title"> 
-Posts 
-<:post_button> <.post_button> Post! </.post_button> </:post_button>
+<.post_title class="bg-color-post-title">
+  Posts
+  <:post_button>
+    <.post_button :if={@user_id}>Post!</.post_button>
+  </:post_button>
 </.post_title>
 <div class="flex flex-col gap-5">
-<.post_card :for={post <- @posts} post={post}/> 
+  <div id="post-form" class="hidden">
+    <.post_form changeset={@changeset} action={~p"/posts"} tag_names={@tag_names} />
+  </div>
+  <.post_card :for={post <- @posts} post={post} />
 </div>
 
 <%!-- keeping for reference --%>

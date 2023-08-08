@@ -1,31 +1,34 @@
-<h1>Hello, this is post search</h1>
-<.simple_form :let={f} for={%{}} method="get" action={~p"/posts/search"}>
-  <.input field={f[:title]} type="text" label="Search Posts" value={@title_query} />
+<.post_title class="bg-color-post-title"> Search </.post_title>
+<.comment_form :let={f} for={%{}} method="get" action={~p"/posts/search"}>
+  <.comment_input field={f[:title]} type="text" label="Search Posts" value={@title_query} />
   <:actions>
-    <.button>Search</.button>
+    <.submit_comment_button>Search</.submit_comment_button>
   </:actions>
-</.simple_form>
-<.table id="posts" rows={@matches}>
-  <:col :let={match} label="Title"><%= match.title %></:col>
-  <:col :let={match} label="Author"><%= match.user.username %></:col>
-  <:col :let={match} label="Body"><%= match.body %></:col>
-  <:col :let={match} label="Published On"><%= match.published_on %></:col>
-  <:col :let={match} label="Visible"><%= match.visible %></:col>
-  <:col :let={match} label="Tags"><%= match.tags %></:col>
-  <:action :let={match}>
-    <.link navigate={~p"/posts/#{match}"}>Show</.link>
-  </:action>
-  <:action :let={match}>
-    <.link :if={@user_id == match.user.id} navigate={~p"/posts/#{match}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={match}>
-    <.link
-      :if={@user_id == match.user.id}
-      href={~p"/posts/#{match}"}
-      method="delete"
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
-</.table>
+</.comment_form>
+<div class="flex flex-col gap-5 mt-8">
+  <.post_card :for={match <- @matches} post={match} />
+</div>
+<%!-- <.table id="posts" rows={@matches}> --%>
+<%!--   <:col :let={match} label="Title"><%= match.title %></:col> --%>
+<%!--   <:col :let={match} label="Author"><%= match.user.username %></:col> --%>
+<%!--   <:col :let={match} label="Body"><%= match.body %></:col> --%>
+<%!--   <:col :let={match} label="Published On"><%= match.published_on %></:col> --%>
+<%!--   <:col :let={match} label="Visible"><%= match.visible %></:col> --%>
+<%!--   <:col :let={match} label="Tags"><%= match.tags |> Enum.map(& &1.name) |> Enum.join(", ") %></:col> --%>
+<%!--   <:action :let={match}> --%>
+<%!--     <.link navigate={~p"/posts/#{match}"}>Show</.link> --%>
+<%!--   </:action> --%>
+<%!--   <:action :let={match}> --%>
+<%!--     <.link :if={@user_id == match.user.id} navigate={~p"/posts/#{match}/edit"}>Edit</.link> --%>
+<%!--   </:action> --%>
+<%!--   <:action :let={match}> --%>
+<%!--     <.link --%>
+<%!--       :if={@user_id == match.user.id} --%>
+<%!--       href={~p"/posts/#{match}"} --%>
+<%!--       method="delete" --%>
+<%!--       data-confirm="Are you sure?" --%>
+<%!--     > --%>
+<%!--       Delete --%>
+<%!--     </.link> --%>
+<%!--   </:action> --%>
+<%!-- </.table> --%>
