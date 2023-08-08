@@ -214,7 +214,7 @@ defmodule BlogWeb.CoreComponents do
     <.form :let={f} for={@for} as={@as} {@rest}>
       <div class="mt-10 space-y-8 bg-yellow-200 border-4 border-black chunky-shadow p-6">
         <%= render_slot(@inner_block, f) %>
-        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+        <div :for={action <- @actions} class="mt-2 flex items-center gap-6">
           <%= render_slot(action, f) %>
         </div>
       </div>
@@ -235,6 +235,7 @@ defmodule BlogWeb.CoreComponents do
       class={[
         "phx-submit-loading:opacity-75 rounded-lg bg-nav hover:text-fuchsia-400 py-2 px-3",
         "text-lg font-semibold font-inter leading-6 border-black border-2 chunky-shadow",
+        "underline underline-offset-2 decoration-2",
         @class
       ]}
       {@rest}
@@ -447,6 +448,30 @@ defmodule BlogWeb.CoreComponents do
     |> comment_input()
   end
 
+  def comment_input(%{type: "checkbox", value: value} = assigns) do
+    assigns =
+      assign_new(assigns, :checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", value) end)
+
+    ~H"""
+    <div phx-feedback-for={@name}>
+      <label class="flex items-center gap-4 text-xl font-inter leading-6 text-black font-bold">
+        <input type="hidden" name={@name} value="false" />
+        <input
+          type="checkbox"
+          id={@id}
+          name={@name}
+          value="true"
+          checked={@checked}
+          class="rounded w-8 h-8 border-black border-2 text-zinc-900 focus:ring-0 focus:border-black focus:outline-none focus:shadow-none bg-yellow-200"
+          {@rest}
+        />
+        <%= @label %>
+      </label>
+      <.error :for={msg <- @errors}><%= msg %></.error>
+    </div>
+    """
+  end
+
   def comment_input(assigns) do
     ~H"""
     <div phx-feedback-for={@name}>
@@ -457,8 +482,8 @@ defmodule BlogWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full text-black font-inter text-3xl bg-yellow-200 border-black border-2 focus:ring-0 sm:text-sm sm:leading-6 outline-none appearance-none",
-          "focus:border-4 focus:outline-none focus:shadow-none",
+          "mt-2 block w-full text-black font-inter text-3xl bg-yellow-200 border-black border-2 sm:text-sm sm:leading-6 outline-none appearance-none",
+          "focus:border-4 focus:outline-none focus:shadow-none focus:ring-0 focus:border-black focus:chunky-shadow",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}
@@ -467,6 +492,7 @@ defmodule BlogWeb.CoreComponents do
     </div>
     """
   end
+
 
 
   attr(:for, :string, default: nil)
@@ -689,9 +715,7 @@ defmodule BlogWeb.CoreComponents do
 
   def post_button(assigns) do
    ~H"""
-   <.link navigate={~p"/posts/new"}>
-    <h2 class="float-right border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-8 absolute -top-6 right-10 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"> <%= render_slot(@inner_block) %> </h2>
-   </.link>
+    <button class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-8 absolute -top-6 right-10 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200" phx-click={show("#post-form")}> <%= render_slot(@inner_block) %> </button>
    """ 
   end
 
@@ -699,7 +723,7 @@ defmodule BlogWeb.CoreComponents do
 
   def comment_button(assigns) do
    ~H"""
-    <h2 class="float-right border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-8 absolute -top-6 right-10 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200" phx-click={show("#comment-form")}> <%= render_slot(@inner_block) %> </h2>
+    <button class="float-right border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-8 absolute -top-6 right-10 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200" phx-click={show("#comment-form")}> <%= render_slot(@inner_block) %> </button>
    """ 
   end
 
