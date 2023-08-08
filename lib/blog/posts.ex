@@ -27,16 +27,16 @@ defmodule Blog.Posts do
       [%Post{}, ...]
 
   """
-  def list_posts do
-    Repo.all(visible_posts_query())
+  def list_posts(preloads \\ [:user]) do
+    Repo.all(visible_posts_query(preloads))
   end
 
-  defp visible_posts_query do
+  defp visible_posts_query(preloads \\ [:user]) do
     from p in Post,
       where: p.visible,
       where: p.published_on <= ^Date.utc_today(),
       order_by: [desc: p.published_on],
-      preload: [:user]
+      preload: ^preloads 
   end
 
   @doc """
