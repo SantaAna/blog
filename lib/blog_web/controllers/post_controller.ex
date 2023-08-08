@@ -12,7 +12,7 @@ defmodule BlogWeb.PostController do
 
   def search(conn, %{"title" => title_query}) do
     user_id = Map.get(conn.assigns[:current_user] || %{}, :id)
-    matches = Posts.search_by_title(title_query)
+    matches = Posts.search_by_title(title_query, [:user, :tags])
     render(conn, :search, title_query: title_query, matches: matches, user_id: user_id)
   end
 
@@ -24,7 +24,15 @@ defmodule BlogWeb.PostController do
   def index(conn, _params) do
     posts = Posts.list_posts()
     user_id = Map.get(conn.assigns[:current_user] || %{}, :id)
-    render(conn, :index, posts: posts, user_id: user_id)
+
+    changeset =
+      if user_id do
+        Posts.change_post(%Post{user_id: conn.assigns.current_user.id})
+      else
+        Posts.change_post(%Post{})
+      end
+
+    render(conn, :index, posts: posts, user_id: user_id, tag_names: "", changeset: changeset)
   end
 
   def new(conn, _params) do
@@ -106,6 +114,7 @@ defmodule BlogWeb.PostController do
     tags =
       post_params["tag_names"]
       |> String.split(",")
+      |> Enum.reject(&(&1 == ""))
       |> Tags.create_tag_list()
 
     case Posts.update_post(post, post_params, tags) do

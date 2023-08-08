@@ -19,10 +19,16 @@
     background-color: #FFB977;
 }
 
+.bg-color-post-title {
+    background-color: #FF8477
+}
+
 .bg-color-global {
     background-color: #0fa858
 }
 
-.chunky-shadow {
-  box-shadow: 7px 7px 0px black;
+@layer utilities{
+    .chunky-shadow {
+      box-shadow: 7px 7px 0px black;
+    }
 }

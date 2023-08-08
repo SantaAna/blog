@@ -1,19 +1,16 @@
-<.header class="text-center">
-  Account Settings
-  <:subtitle>Manage your account email address and password settings</:subtitle>
-</.header>
+<.post_title class="bg-color-post-title"> Account Settings </.post_title>
 
-<div class="space-y-12 divide-y">
+<div class="space-y-12">
   <div>
-    <.simple_form :let={f} for={@email_changeset} action={~p"/users/settings"} id="update_email">
+    <.comment_form :let={f} for={@email_changeset} action={~p"/users/settings"} id="update_email">
       <.error :if={@email_changeset.action}>
         Oops, something went wrong! Please check the errors below.
       </.error>
 
-      <.input field={f[:action]} type="hidden" name="action" value="update_email" />
+      <.comment_input field={f[:action]} type="hidden" name="action" value="update_email" />
 
-      <.input field={f[:email]} type="email" label="Email" required />
-      <.input
+      <.comment_input field={f[:email]} type="email" label="Email" required />
+      <.comment_input
         field={f[:current_password]}
         name="current_password"
         type="password"
@@ -22,12 +19,13 @@
         id="current_password_for_email"
       />
       <:actions>
-        <.button phx-disable-with="Changing...">Change Email</.button>
+
+        <.submit_comment_button phx-disable-with="Changing...">Change Email</.submit_comment_button>
       </:actions>
-    </.simple_form>
+    </.comment_form>
   </div>
   <div>
-    <.simple_form
+    <.comment_form
       :let={f}
       for={@password_changeset}
       action={~p"/users/settings"}
@@ -37,17 +35,17 @@
         Oops, something went wrong! Please check the errors below.
       </.error>
 
-      <.input field={f[:action]} type="hidden" name="action" value="update_password" />
+      <.comment_input field={f[:action]} type="hidden" name="action" value="update_password" />
 
-      <.input field={f[:password]} type="password" label="New password" required />
-      <.input
+      <.comment_input field={f[:password]} type="password" label="New password" required />
+      <.comment_input
         field={f[:password_confirmation]}
         type="password"
         label="Confirm new password"
         required
       />
 
-      <.input
+      <.comment_input
         field={f[:current_password]}
         name="current_password"
         type="password"
@@ -56,8 +54,8 @@
         required
       />
       <:actions>
-        <.button phx-disable-with="Changing...">Change Password</.button>
+        <.submit_comment_button phx-disable-with="Changing...">Change Password</.submit_comment_button>
       </:actions>
-    </.simple_form>
+    </.comment_form>
   </div>
 </div>

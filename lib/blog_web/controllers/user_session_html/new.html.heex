@@ -1,31 +1,32 @@
-<div class="mx-auto max-w-sm">
-  <.header class="text-center">
-    Sign in to account
-    <:subtitle>
-      Don't have an account?
-      <.link navigate={~p"/users/register"} class="font-semibold text-brand hover:underline">
-        Sign up
-      </.link>
-      for an account now.
-    </:subtitle>
-  </.header>
+<div class="mx-auto">
+<.post_title class="bg-color-post-title"> Sign In </.post_title>
+  <%!-- <.header class="text-center"> --%>
+  <%!--   Sign in to account --%>
+  <%!--   <:subtitle> --%>
+  <%!--     Don't have an account? --%>
+  <%!--     <.link navigate={~p"/users/register"} class="font-semibold text-brand hover:underline"> --%>
+  <%!--       Sign up --%>
+  <%!--     </.link> --%>
+  <%!--     for an account now. --%>
+  <%!--   </:subtitle> --%>
+  <%!-- </.header> --%>
 
-  <.simple_form :let={f} for={@conn.params["user"]} as={:user} action={~p"/users/log_in"}>
+  <.comment_form :let={f} for={@conn.params["user"]} as={:user} action={~p"/users/log_in"}>
     <.error :if={@error_message}><%= @error_message %></.error>
 
-    <.input field={f[:email]} type="email" label="Email" required />
-    <.input field={f[:password]} type="password" label="Password" required />
+    <.comment_input field={f[:email]} type="email" label="Email" required />
+    <.comment_input field={f[:password]} type="password" label="Password" required />
 
     <:actions :let={f}>
-      <.input field={f[:remember_me]} type="checkbox" label="Keep me logged in" />
-      <.link href={~p"/users/reset_password"} class="text-sm font-semibold">
+      <.comment_input field={f[:remember_me]} type="checkbox" label="Keep me logged in" />
+      <.link href={~p"/users/reset_password"} class="text-sm font-semibold underline decoration-2 underline-offset-8 font-inter hover:text-fuchsia-600">
         Forgot your password?
       </.link>
     </:actions>
     <:actions>
-      <.button phx-disable-with="Signing in..." class="w-full">
+      <.submit_comment_button phx-disable-with="Signing in..." class="w-full">
         Sign in <span aria-hidden="true">→</span>
-      </.button>
+      </.submit_comment_button>
     </:actions>
-  </.simple_form>
+  </.comment_form>
 </div>

@@ -33,8 +33,8 @@ defmodule Blog.PostsTest do
           user_id: state[:user_id]
         })
 
-      assert Posts.search_by_title("") ==
-               [today_post, yesterday_post] |> Enum.map(&Repo.preload(&1, :user))
+      assert Posts.search_by_title("", [:user, :tags]) ==
+               [today_post, yesterday_post] |> Enum.map(&Repo.preload(&1, [:user, :tags]))
     end
 
     test "search_by_title/1 does not display posts dated in the future", state do
@@ -62,7 +62,7 @@ defmodule Blog.PostsTest do
         user_id: state[:user_id]
       })
 
-      assert Posts.search_by_title("hello") == [match] |> Enum.map(&Repo.preload(&1, :user))
+      assert Posts.search_by_title("hello", [:user, :tags]) == [match] |> Enum.map(&Repo.preload(&1, [:user, :tags]))
     end
 
     test "search_by_title/1 return multiple matches", state do
@@ -89,9 +89,9 @@ defmodule Blog.PostsTest do
         user_id: state[:user_id]
       })
 
-      expected = Enum.map([match1, match2], &Repo.preload(&1, :user))
+      expected = Enum.map([match1, match2], &Repo.preload(&1, [:user, :tags]))
 
-      result = Posts.search_by_title("hello")
+      result = Posts.search_by_title("hello", [:user, :tags])
 
       assert Enum.sort(result) == Enum.sort(expected)
     end
@@ -114,9 +114,9 @@ defmodule Blog.PostsTest do
         })
 
       expected = [match1, match2]
-      result = Posts.search_by_title("hello")
+      result = Posts.search_by_title("hello", [:user, :tags])
 
-      assert Enum.sort(result) == Enum.sort(expected) |> Enum.map(&Repo.preload(&1, :user))
+      assert Enum.sort(result) == Enum.sort(expected) |> Enum.map(&Repo.preload(&1, [:user, :tags]))
     end
 
     test "list_posts/0 does not return visible: false posts", state do
@@ -135,8 +135,8 @@ defmodule Blog.PostsTest do
           user_id: state[:user_id]
         })
 
-      assert Posts.list_posts() ==
-               [today_post, yesterday_post] |> Enum.map(&Repo.preload(&1, :user))
+      assert Posts.list_posts([:user, :tags]) ==
+               [today_post, yesterday_post] |> Enum.map(&Repo.preload(&1, [:user, :tags]))
     end
 
     test "list_posts/0 does not display posts dated in the future", state do
@@ -147,14 +147,14 @@ defmodule Blog.PostsTest do
     test "list_posts/0 returns all posts", state do
       post =
         post_fixture(%{published_on: Date.utc_today(), visible: true, user_id: state[:user_id]})
-        |> Repo.preload(:user)
+        |> Repo.preload([:user, :tags])
 
-      assert Posts.list_posts() == [post]
+      assert Posts.list_posts([:user, :tags]) == [post]
     end
 
     test "get_post!/2 returns the post with given id and no options", state do
-      post = post_fixture(%{user_id: state[:user_id]})
-      assert Posts.get_post!(post.id) == post
+      post = post_fixture(%{user_id: state[:user_id]}) |> Repo.preload([:user, :tags])
+      assert Posts.get_post!(post.id, [:user, :tags]) == post
     end
 
     test "get_post!/2 returns the post with given id and comments", state do
@@ -185,9 +185,9 @@ defmodule Blog.PostsTest do
     end
 
     test "update_post/2 with invalid data returns error changeset", state do
-      post = post_fixture(%{user_id: state[:user_id]})
+      post = post_fixture(%{user_id: state[:user_id]}) |> Repo.preload([:user, :tags])
       assert {:error, %Ecto.Changeset{}} = Posts.update_post(post, @invalid_attrs)
-      assert post == Posts.get_post!(post.id)
+      assert post == Posts.get_post!(post.id, [:user, :tags])
     end
 
     test "delete_post/1 deletes the post", state do
