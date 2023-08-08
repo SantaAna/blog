@@ -15,11 +15,11 @@
 <.post_title class="bg-color-welcome mt-10">
   Comments
   <:post_button>
-    <.comment_button>Comment!</.comment_button>
+    <.comment_button :if={@user_id}>Comment!</.comment_button>
   </:post_button>
 </.post_title>
 <div class="flex flex-col gap-3">
-<div id="comment-form" class="hidden">
+<div id="comment-form" class="hidden" :if={@user_id}>
   <.comment_form :let={f} for={@changeset} action={~p"/comments"}>
     <.input type="hidden" field={f[:user_id]} value={@user_id} />
     <.input type="hidden" field={f[:post_id]} value={@post.id} />
