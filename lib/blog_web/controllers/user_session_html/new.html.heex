@@ -1,5 +1,5 @@
 <div class="mx-auto">
-<.post_title class="bg-color-post-title"> Sign In </.post_title>
+  <.post_title class="bg-color-post-title">Sign In</.post_title>
   <%!-- <.header class="text-center"> --%>
   <%!--   Sign in to account --%>
   <%!--   <:subtitle> --%>
@@ -19,7 +19,10 @@
 
     <:actions :let={f}>
       <.comment_input field={f[:remember_me]} type="checkbox" label="Keep me logged in" />
-      <.link href={~p"/users/reset_password"} class="text-sm font-semibold underline decoration-2 underline-offset-8 font-inter hover:text-fuchsia-600">
+      <.link
+        href={~p"/users/reset_password"}
+        class="text-sm font-semibold underline decoration-2 underline-offset-8 font-inter hover:text-fuchsia-600"
+      >
         Forgot your password?
       </.link>
     </:actions>

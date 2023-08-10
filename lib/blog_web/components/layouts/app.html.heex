@@ -4,9 +4,24 @@
       <.link navigate={~p"/"} class="text-6xl italic font-bold font-inter">Post It!</.link>
     </div>
     <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900 font-inter">
-      <.link navigate={~p"/"} class="text-3xl decoration-2 italic underline underline-offset-8 font-inter font-bold hover:text-fuchsia-400 transition duration-200">Home</.link>
-      <.link navigate={~p"/posts"} class="text-3xl decoration-2 italic underline underline-offset-8 font-inter font-bold hover:text-fuchsia-400 transition duration-200">Posts</.link>
-      <.link navigate={~p"/posts/search"} class="text-3xl decoration-2 italic underline underline-offset-8 font-inter font-bold hover:text-fuchsia-400 transition duration-200">Search</.link>
+      <.link
+        navigate={~p"/"}
+        class="text-3xl decoration-2 italic underline underline-offset-8 font-inter font-bold hover:text-fuchsia-400 transition duration-200"
+      >
+        Home
+      </.link>
+      <.link
+        navigate={~p"/posts"}
+        class="text-3xl decoration-2 italic underline underline-offset-8 font-inter font-bold hover:text-fuchsia-400 transition duration-200"
+      >
+        Posts
+      </.link>
+      <.link
+        navigate={~p"/posts/search"}
+        class="text-3xl decoration-2 italic underline underline-offset-8 font-inter font-bold hover:text-fuchsia-400 transition duration-200"
+      >
+        Search
+      </.link>
     </div>
   </div>
 </header>

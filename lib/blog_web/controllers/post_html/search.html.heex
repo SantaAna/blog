@@ -1,4 +1,4 @@
-<.post_title class="bg-color-post-title"> Search </.post_title>
+<.post_title class="bg-color-post-title">Search</.post_title>
 <.comment_form :let={f} for={%{}} method="get" action={~p"/posts/search"}>
   <.comment_input field={f[:title]} type="text" label="Search Posts" value={@title_query} />
   <:actions>
