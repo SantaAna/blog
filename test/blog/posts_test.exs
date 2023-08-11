@@ -62,7 +62,8 @@ defmodule Blog.PostsTest do
         user_id: state[:user_id]
       })
 
-      assert Posts.search_by_title("hello", [:user, :tags]) == [match] |> Enum.map(&Repo.preload(&1, [:user, :tags]))
+      assert Posts.search_by_title("hello", [:user, :tags]) ==
+               [match] |> Enum.map(&Repo.preload(&1, [:user, :tags]))
     end
 
     test "search_by_title/1 return multiple matches", state do
@@ -116,7 +117,8 @@ defmodule Blog.PostsTest do
       expected = [match1, match2]
       result = Posts.search_by_title("hello", [:user, :tags])
 
-      assert Enum.sort(result) == Enum.sort(expected) |> Enum.map(&Repo.preload(&1, [:user, :tags]))
+      assert Enum.sort(result) ==
+               Enum.sort(expected) |> Enum.map(&Repo.preload(&1, [:user, :tags]))
     end
 
     test "list_posts/0 does not return visible: false posts", state do
@@ -171,6 +173,15 @@ defmodule Blog.PostsTest do
       assert post.title == "some title"
     end
 
+    test "create_post/1 with valid data and cover image creates a post", state do
+      valid_attrs = %{body: "some body", title: "some title", user_id: state[:user_id], cover_image: %{url: "www.picture.com"}}
+
+      assert {:ok, %Post{} = post} = Posts.create_post(valid_attrs)
+      assert post.body == "some body"
+      assert post.title == "some title"
+      assert post.cover_image.url == "www.picture.com"
+    end
+
     test "create_post/1 with invalid data returns error changeset", state do
       assert {:error, %Ecto.Changeset{}} = Posts.create_post(@invalid_attrs)
     end
@@ -182,6 +193,16 @@ defmodule Blog.PostsTest do
       assert {:ok, %Post{} = post} = Posts.update_post(post, update_attrs)
       assert post.body == "some updated body"
       assert post.title == "some updated title"
+    end
+
+    test "update_post/2 with valid data and cover image updates the post and cover image", state do
+      post = post_fixture(%{user_id: state[:user_id], cover_image: %{url: "www.otherpicture.com"}})
+      update_attrs = %{body: "some updated body", title: "some updated title", cover_image: %{url: "www.somepicture.com"}}
+
+      assert {:ok, %Post{} = post} = Posts.update_post(post, update_attrs)
+      assert post.body == "some updated body"
+      assert post.title == "some updated title"
+      assert post.cover_image.url == "www.somepicture.com"
     end
 
     test "update_post/2 with invalid data returns error changeset", state do

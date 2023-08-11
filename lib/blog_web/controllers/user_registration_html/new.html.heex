@@ -1,5 +1,5 @@
 <div class="mx-auto">
-  <.post_title class="bg-color-post-title"> Register Account </.post_title>
+  <.post_title class="bg-color-post-title">Register Account</.post_title>
   <%!-- <.header class="text-center"> --%>
   <%!--   Register for an account --%>
   <%!--   <:subtitle> --%>
@@ -21,7 +21,9 @@
     <.comment_input field={f[:password]} type="password" label="Password" required />
 
     <:actions>
-      <.submit_comment_button phx-disable-with="Creating account..." class="w-full">Create an account</.submit_comment_button>
+      <.submit_comment_button phx-disable-with="Creating account..." class="w-full">
+        Create an account
+      </.submit_comment_button>
     </:actions>
   </.comment_form>
 </div>

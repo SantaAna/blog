@@ -36,7 +36,7 @@ defmodule Blog.Posts do
       where: p.visible,
       where: p.published_on <= ^Date.utc_today(),
       order_by: [desc: p.published_on],
-      preload: ^preloads 
+      preload: ^preloads
   end
 
   @doc """

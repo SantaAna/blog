@@ -72,7 +72,8 @@ defmodule BlogWeb.PostController do
 
   def show(conn, %{"id" => id}) do
     user_id = Map.get(conn.assigns[:current_user] || %{}, :id)
-    post = Posts.get_post!(id, [:user, comments: [:user]])
+    post = Posts.get_post!(id, [:user, :cover_image, comments: [:user]])
+    IO.inspect(post.cover_image, label: "cover image for post")
     changeset = Comments.change_comment(%Comment{})
     render(conn, :show, post: post, changeset: changeset, user_id: user_id)
   end

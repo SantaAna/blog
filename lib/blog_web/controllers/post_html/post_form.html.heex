@@ -6,6 +6,9 @@
   <.comment_input field={f[:title]} type="text" label="Title" />
   <.comment_input field={f[:tag_names]} type="text" label="Tags" value={@tag_names} />
   <.comment_input field={f[:body]} type="text" label="Body" />
+  <.inputs_for :let={cover_image} field={f[:cover_image]}>
+      <.comment_input type="text" field={cover_image[:url]} label="Cover Image URL"/>
+  </.inputs_for>
   <.comment_input field={f[:published_on]} type="date" label="Published On" />
   <.comment_input field={f[:visible]} type="checkbox" label="Visible" />
   <:actions>

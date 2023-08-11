@@ -15,6 +15,7 @@ defmodule BlogWeb.CoreComponents do
   Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
+
   use Phoenix.VerifiedRoutes,
     endpoint: BlogWeb.Endpoint,
     router: BlogWeb.Router
@@ -244,7 +245,6 @@ defmodule BlogWeb.CoreComponents do
     </button>
     """
   end
-
 
   @doc """
   Renders a button.
@@ -493,8 +493,6 @@ defmodule BlogWeb.CoreComponents do
     """
   end
 
-
-
   attr(:for, :string, default: nil)
   slot(:inner_block, required: true)
 
@@ -519,7 +517,6 @@ defmodule BlogWeb.CoreComponents do
     </label>
     """
   end
-
 
   @doc """
   Generates a generic error message.
@@ -714,54 +711,69 @@ defmodule BlogWeb.CoreComponents do
   slot(:inner_block, required: true)
 
   def post_button(assigns) do
-   ~H"""
-    <button class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-8 absolute -top-6 right-10 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200" phx-click={show("#post-form")}> <%= render_slot(@inner_block) %> </button>
-   """ 
+    ~H"""
+    <button
+      class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-8 absolute -top-6 right-10 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"
+      phx-click={show("#post-form")}
+    >
+      <%= render_slot(@inner_block) %>
+    </button>
+    """
   end
 
   slot(:inner_block, required: true)
 
   def comment_button(assigns) do
-   ~H"""
-    <button class="float-right border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-8 absolute -top-6 right-10 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200" phx-click={show("#comment-form")}> <%= render_slot(@inner_block) %> </button>
-   """ 
+    ~H"""
+    <button
+      class="float-right border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-8 absolute -top-6 right-10 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"
+      phx-click={show("#comment-form")}
+    >
+      <%= render_slot(@inner_block) %>
+    </button>
+    """
   end
 
- attr :class, :string, default: nil  
- slot(:inner_block, required: true)
- slot(:post_button)
+  attr :class, :string, default: nil
+  slot(:inner_block, required: true)
+  slot(:post_button)
 
   def post_title(assigns) do
     ~H"""
     <div class="relative">
-    <%= render_slot(@post_button) %>
-    <h1 class={["mb-5 border-4 border-black chunky-shadow text-center font-bold text-6xl p-6 font-inter", @class]}>
+      <%= render_slot(@post_button) %>
+      <h1 class={[
+        "mb-5 border-4 border-black chunky-shadow text-center font-bold text-6xl p-6 font-inter",
+        @class
+      ]}>
         <%= render_slot(@inner_block) %>
-    </h1>
+      </h1>
     </div>
-    """ 
+    """
   end
-  
+
   attr :post, :map, required: true
   attr :class, :string, default: nil
+
   def post_page(assigns) do
     ~H"""
     <div class={["border-4 border-black chunky-shadow p-6 font-inter", @class]}>
       <div class="text-2xl font-bold mb-5">by <%= @post.user.username %></div>
-      <div class="text-lg font-semibold"> <%= @post.body %> </div>
+      <div class="text-lg font-semibold"><%= @post.body %></div>
     </div>
-    """ 
+    """
   end
 
   attr :comment, :map, required: true
   attr :class, :string, default: nil
+
   def comment(assigns) do
-  ~H"""
-  <div class={["border-4 border-black chunky-shadow p-6 font-inter", @class]}>
-    <div class="text-xl font-bold mb-5">from <%= @comment.user.username %></div>
-    <div class="text-lg font-semibold"> <%= @comment.content %> </div>
-  </div>
-  """
+    ~H"""
+    <div class={["border-4 border-black chunky-shadow p-6 font-inter", @class]}>
+      <div class="text-xl font-bold mb-5">from <%= @comment.user.username %></div>
+      <div class="text-lg font-semibold"><%= @comment.content %></div>
+    </div>
+    """
   end
 
   @doc """
