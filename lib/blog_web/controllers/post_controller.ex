@@ -80,7 +80,7 @@ defmodule BlogWeb.PostController do
 
   def edit(conn, %{"id" => id}) do
     user_id = conn.assigns[:current_user].id
-    post = Posts.get_post!(id, [:tags])
+    post = Posts.get_post!(id, [:tags, :cover_image])
     tag_names = Enum.map(post.tags, & &1.name) |> Enum.join(",")
 
     if user_id == post.user_id do
