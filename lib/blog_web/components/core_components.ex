@@ -686,10 +686,13 @@ defmodule BlogWeb.CoreComponents do
   end
 
   attr(:post, :map, required: true)
-
+  slot(:edit_button)
+  slot(:delete_button)
   def post_card(assigns) do
     ~H"""
-    <div class="flex flex-row bg-color-post gap-5 border-4 border-black chunky-shadow p-4">
+    <div class="flex flex-row bg-color-post gap-5 border-4 border-black chunky-shadow p-4 relative">
+      <%= render_slot(@edit_button) %>    
+      <%= render_slot(@delete_button) %>
       <div class="flex flex-col w-1/2 gap-4">
         <div class="text-center text-4xl text-inter text-bold underline decoration-2 underline-offset-8 hover:text-nav transition duration-200">
           <.link navigate={~p"/posts/#{@post.id}"}><%= @post.title %></.link>
@@ -705,6 +708,36 @@ defmodule BlogWeb.CoreComponents do
       </div>
       <p class="text-inter text-lg text-semibold w-1/2"><%= @post.body %></p>
     </div>
+    """
+  end
+  
+  attr(:post, :map, required: true)
+  slot(:inner_block, required: true)
+
+  def edit_button(assigns) do
+    ~H"""
+    <.link navigate={~p"/posts/#{@post}/edit"}>
+    <button
+      class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-5 absolute -top-6 right-0 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"}
+    >
+      <%= render_slot(@inner_block) %>
+    </button>
+    </.link>
+    """
+  end
+
+  attr(:post, :map, required: true)
+  slot(:inner_block, required: true)
+
+  def delete_button(assigns) do
+    ~H"""
+    <.link href={~p"/posts/#{@post}"} method="delete">
+    <button
+      class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-5 absolute -top-6 right-28 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"}
+    >
+      <%= render_slot(@inner_block) %>
+    </button>
+    </.link>
     """
   end
 
