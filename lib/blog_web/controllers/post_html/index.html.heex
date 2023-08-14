@@ -4,11 +4,16 @@
     <.post_button :if={@user_id}>Post!</.post_button>
   </:post_button>
 </.post_title>
-<div class="flex flex-col gap-5">
+<div class="flex flex-col gap-8">
   <div id="post-form" class="hidden">
     <.post_form changeset={@changeset} action={~p"/posts"} tag_names={@tag_names} />
   </div>
-  <.post_card :for={post <- @posts} post={post} />
+  <.post_card :for={post <- @posts} post={post}>
+    <:edit_button> 
+      <.edit_button post={post} :if={@user_id == post.user_id}> Edit! </.edit_button> 
+      <.delete_button post={post} :if={@user_id == post.user_id}> Delete! </.delete_button> 
+    </:edit_button>
+  </.post_card>
 </div>
 
 <%!-- keeping for reference --%>
