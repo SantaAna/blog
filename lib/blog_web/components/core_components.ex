@@ -699,7 +699,7 @@ defmodule BlogWeb.CoreComponents do
           <div class="text-center text-4xl text-inter text-bold underline decoration-2 underline-offset-8 hover:text-nav transition duration-200">
             <.link navigate={~p"/posts/#{@post.id}"}><%= @post.title %></.link>
           </div>
-          <div class="grid grid-cols-3 justify-items-center py-3 w-2/3 mx-auto">
+          <div class="grid grid-cols-3 gap-3 justify-items-center py-3 w-2/3 mx-auto">
             <.tag :for={tag_name <- @post.tags |> Enum.map(& &1.name)}>
               <%= tag_name %> 
             </.tag>
@@ -714,7 +714,7 @@ defmodule BlogWeb.CoreComponents do
           </span>
         </div>
       </div>
-      <p class="text-inter text-lg text-semibold w-1/2"><%= @post.body %></p>
+      <p class="text-inter text-lg text-semibold w-1/2 p-10"><%= @post.body %></p>
     </div>
     """
   end
@@ -736,7 +736,7 @@ defmodule BlogWeb.CoreComponents do
     ~H"""
     <.link navigate={~p"/posts/#{@post}/edit"}>
       <button
-        class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-5 absolute -top-6 right-2 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"
+        class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-3 absolute -top-6 right-2 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"
         }
       >
         <%= render_slot(@inner_block) %>
@@ -752,7 +752,7 @@ defmodule BlogWeb.CoreComponents do
     ~H"""
     <.link href={~p"/posts/#{@post}"} method="delete">
       <button
-        class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-5 absolute -top-6 right-28 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"
+        class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-3 absolute -top-6 right-28 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"
         }
       >
         <%= render_slot(@inner_block) %>
