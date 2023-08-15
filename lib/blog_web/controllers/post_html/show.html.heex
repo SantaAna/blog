@@ -10,6 +10,9 @@
 
 <.post_title class="bg-color-post-title">
   <%= @post.title %>
+  <:post_button>
+    <.edit_button post={@post} :if={@user_id == @post.user_id}> Edit! </.edit_button> 
+  </:post_button>
 </.post_title>
 <img :if={@post.cover_image} src={@post.cover_image.url} />
 <.post_page post={@post} class="bg-color-post" />

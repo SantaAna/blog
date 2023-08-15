@@ -91,7 +91,14 @@ defmodule Blog.Posts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_post(%Post{} = post, attrs, tags \\ []) do
+  def update_post(post, attrs, tags \\ [])
+  def update_post(%Post{} = post, %{"cover_image" => %{"url" => ""}} = attrs, tags) do
+    attrs = Map.put(attrs, "cover_image", nil)
+    post
+    |> Post.changeset(attrs, tags)
+    |> Repo.update()
+  end
+  def update_post(%Post{} = post, attrs, tags) do
     post
     |> Post.changeset(attrs, tags)
     |> Repo.update()

@@ -117,9 +117,9 @@ defmodule BlogWeb.CoreComponents do
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
       class={[
-        "fixed top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
-        @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
-        @kind == :error && "bg-rose-50 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
+        "fixed top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1 font-inter font-semibold chunky-shadow",
+        @kind == :info && "bg-emerald-50 text-emerald-800",
+        @kind == :error && "bg-rose-50 text-rose-900"
       ]}
       {@rest}
     >
@@ -688,14 +688,22 @@ defmodule BlogWeb.CoreComponents do
   attr(:post, :map, required: true)
   slot(:edit_button)
   slot(:delete_button)
+
   def post_card(assigns) do
     ~H"""
     <div class="flex flex-row bg-color-post gap-5 border-4 border-black chunky-shadow p-4 relative">
-      <%= render_slot(@edit_button) %>    
+      <%= render_slot(@edit_button) %>
       <%= render_slot(@delete_button) %>
       <div class="flex flex-col w-1/2 gap-4">
-        <div class="text-center text-4xl text-inter text-bold underline decoration-2 underline-offset-8 hover:text-nav transition duration-200">
-          <.link navigate={~p"/posts/#{@post.id}"}><%= @post.title %></.link>
+        <div>
+          <div class="text-center text-4xl text-inter text-bold underline decoration-2 underline-offset-8 hover:text-nav transition duration-200">
+            <.link navigate={~p"/posts/#{@post.id}"}><%= @post.title %></.link>
+          </div>
+          <div class="grid grid-cols-3 justify-items-center py-3 w-2/3 mx-auto">
+            <.tag :for={tag_name <- @post.tags |> Enum.map(& &1.name)}>
+              <%= tag_name %> 
+            </.tag>
+          </div>
         </div>
         <div class="flex flex-row justify-center gap-5">
           <span class="text-inter text-lg text-semibold">
@@ -710,18 +718,29 @@ defmodule BlogWeb.CoreComponents do
     </div>
     """
   end
-  
+
+  slot(:inner_block, required: true)
+  def tag(assigns) do
+    ~H"""
+      <div class="rounded-l-full rounded-r-md relative text-right pl-4 pr-2 bg-sky-500 chunky-shadow-small">
+        <div class="rounded-full block absolute bg-black left-1 top-2 p-1"></div>
+        <%= render_slot(@inner_block) %>
+      </div>
+    """
+  end
+
   attr(:post, :map, required: true)
   slot(:inner_block, required: true)
 
   def edit_button(assigns) do
     ~H"""
     <.link navigate={~p"/posts/#{@post}/edit"}>
-    <button
-      class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-5 absolute -top-6 right-0 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"}
-    >
-      <%= render_slot(@inner_block) %>
-    </button>
+      <button
+        class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-5 absolute -top-6 right-2 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"
+        }
+      >
+        <%= render_slot(@inner_block) %>
+      </button>
     </.link>
     """
   end
@@ -732,11 +751,12 @@ defmodule BlogWeb.CoreComponents do
   def delete_button(assigns) do
     ~H"""
     <.link href={~p"/posts/#{@post}"} method="delete">
-    <button
-      class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-5 absolute -top-6 right-28 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"}
-    >
-      <%= render_slot(@inner_block) %>
-    </button>
+      <button
+        class="border-black border-4 chunky-shadow overflow-visible bg-nav rounded-full p-5 absolute -top-6 right-28 font-inter font-bold italic underline underline-offset-8 decoration-2 text-xl hover:text-fuchsia-400 duration-200"
+        }
+      >
+        <%= render_slot(@inner_block) %>
+      </button>
     </.link>
     """
   end

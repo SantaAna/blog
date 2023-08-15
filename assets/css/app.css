@@ -31,4 +31,7 @@
     .chunky-shadow {
       box-shadow: 7px 7px 0px black;
     }
+    .chunky-shadow-small {
+      box-shadow: 4px 4px 0px black;
+    }
 }

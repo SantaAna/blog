@@ -22,9 +22,8 @@ defmodule BlogWeb.PostController do
   end
 
   def index(conn, _params) do
-    posts = Posts.list_posts()
+    posts = Posts.list_posts([:tags, :user])
     user_id = Map.get(conn.assigns[:current_user] || %{}, :id)
-
     changeset =
       if user_id do
         Posts.change_post(%Post{user_id: conn.assigns.current_user.id})
@@ -110,7 +109,7 @@ defmodule BlogWeb.PostController do
   end
 
   def update(conn, %{"id" => id, "post" => post_params}) do
-    post = Posts.get_post!(id, [:tags])
+    post = Posts.get_post!(id, [:tags, :cover_image])
 
     tags =
       post_params["tag_names"]
