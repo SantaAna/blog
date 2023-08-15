@@ -4,7 +4,7 @@
     <.post_button :if={@user_id}>Post!</.post_button>
   </:post_button>
 </.post_title>
-<div class="flex flex-col gap-8">
+<div class="flex flex-col gap-8 mt-10">
   <div id="post-form" class="hidden">
     <.post_form changeset={@changeset} action={~p"/posts"} tag_names={@tag_names} />
   </div>
